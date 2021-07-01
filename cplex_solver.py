@@ -1,0 +1,115 @@
+from docplex.cp.model import CpoModel
+from docplex.mp.model import Model
+import numpy as np
+import pandas as pd
+import argparse
+import os
+import time
+import sys
+
+
+
+EJES = ['economia', 'diplomacia', 'estado', 'sociedad']
+BASE = "./dataset/"
+FILE = "Registro_soluciones.csv"
+
+def get_data(n, file):
+	try:
+		# Obtener dataset y dejar los datos en matriz 3d de dimensiones (4 x n x 4) = (num_ejes x n x num_segmentos)
+		d = pd.read_csv( BASE+file, index_col=0 )
+		assert len(d.index < n), "Dataset muy pequeño!"
+
+	except FileNotFoundError:
+		print("Archivos no encontrados")
+		sys.exit()
+
+	
+	d = d.head(n).to_numpy()
+	o = pd.DataFrame()
+	datos = [0, 0, 0, 0]
+	for i, j in zip( list(range(0, d.shape[1], 4)), list(range(4)) ):
+		datos[j] = d[:, i:i+4]
+		orden = []
+		for jj in range(datos[j].shape[1]):
+			orden.append( np.sum(datos[j][:,jj]) )
+
+		aux = list(zip( orden, list(range(4)) ))
+		aux.sort(reverse=True)
+		o[EJES[j]] = [ aux[k][1] for k in range(len(aux)) ]
+
+	return np.array(datos), o.to_numpy()
+
+
+def modelo(data, orden, n, l, m, h=4, n_axs=4):
+	model = Model()
+
+	# Variables -> matrix X de LxN
+	x = []
+	for j in range(l):
+		x.append( model.integer_var_list(n, 0, 1, name="x[{}]".format(j)) )
+	x = np.array(x)
+
+
+	# Constraints // sujeto a:
+
+	# ------------------------------------------------------------------------- #
+	# 1) Para cada grupo, la cantidad de integrantes no debe superar el máximo m
+	# La suma de cada fila debe ser <= m
+	for j in range(l):
+		model.add_constraint( model.sum([ x[j,i] for i in range(n) ]) <= m )
+
+
+	# ------------------------------------------------------------------------- #
+	# 2) Cada persona pertenece SOLO a UN grupo y ninguna se queda sin grupo
+	# La suma de cada columna debe ser = 1
+	for i in range(n):
+		model.add_constraint( model.sum([ x[j,i] for j in range(l) ]) == 1 )
+
+
+	model.minimize(model.sum([ model.max([ model.scal_prod(x[j,:], data[e, :, orden[k+1,e]]) - model.scal_prod(x[j,:], data[e, :, orden[k,e]]), 0 ]) for k in range(h-1) for e in range(n_axs) for j in range(l) ]))
+
+	# k+1 = orden[k+1, e] ; k = orden[k, e]
+	print("Modelo listo...")
+	inicio = time.time()
+	sol = model.solve()
+	final = time.time()
+
+	if sol:
+		if not FILE in os.listdir(os.getcwd()):
+			df_sol = pd.DataFrame()
+		else:
+			df_sol = pd.read_csv(FILE, index_col=0)
+
+		print("Solución: ", sol.get_objective_value())
+		print("Tiempo: ", final-inicio)
+		df_sol[ "Sol n={}".format(n) ] = sol.get_objective_value()
+		df_sol[ "Time n={}".format(n) ] = final-inicio
+		df_sol.to_csv(FILE)
+		xx = []
+
+		for j in range(l):
+			print("Grupo ", j, ": ", end="")
+			first = True
+			aux = []
+			for i in range(n):
+				if sol.get_value( "x[{}]_{}".format(j,i)) == 1:
+					print("\t", i, end="")
+					#print("Persona {} pertenece al grupo {}".format(i, j))
+			print()
+
+
+
+
+
+if __name__ == "__main__":
+	parser = argparse.ArgumentParser(description='Formación de grupos colabnorativos usando cplex')
+	parser.add_argument('-n', '--num_personas', type=int, default=10)
+	parser.add_argument('-l', '--num_grupos', type=int, default=5)
+	parser.add_argument('-m', '--max_personas', type=int, default=2)
+	parser.add_argument('-seg', '--num_segmentos', type=int, default=4)	# segmentos = h
+	parser.add_argument('-d', '--dataset_file', type=str, default="Dataset10000.csv")
+	args = parser.parse_args()
+	print(args)
+
+	data, orden = get_data( args.num_personas, args.dataset_file )
+	modelo( data, orden, args.num_personas, args.num_grupos, args.max_personas )
