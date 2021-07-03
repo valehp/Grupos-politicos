@@ -1,4 +1,3 @@
-from docplex.cp.model import CpoModel
 from docplex.mp.model import Model
 import numpy as np
 import pandas as pd
