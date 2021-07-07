@@ -1,3 +1,4 @@
+from docplex.cp.model import CpoModel
 from docplex.mp.model import Model
 import numpy as np
 import pandas as pd
@@ -22,7 +23,6 @@ def get_data(n, file):
 		print("Archivos no encontrados")
 		sys.exit()
 
-	
 	d = d.head(n).to_numpy()
 	o = pd.DataFrame()
 	datos = [0, 0, 0, 0]
@@ -75,26 +75,45 @@ def modelo(data, orden, n, l, m, h=4, n_axs=4):
 
 	if sol:
 		if not FILE in os.listdir(os.getcwd()):
-			df_sol = pd.DataFrame()
+			df_sol = pd.DataFrame(columns=["N", "Solucion", "Tiempo"])
 		else:
 			df_sol = pd.read_csv(FILE, index_col=0)
 
 		print("Solución: ", sol.get_objective_value())
 		print("Tiempo: ", final-inicio)
-		df_sol[ "Sol n={}".format(n) ] = sol.get_objective_value()
-		df_sol[ "Time n={}".format(n) ] = final-inicio
+		df_sol = df_sol.append( pd.DataFrame( {"N":[n], "Solucion":[sol.get_objective_value()], "Tiempo":[final-inicio]} ), ignore_index=True )
 		df_sol.to_csv(FILE)
 		xx = []
+		grupos = [ [] for i in range(l) ]
 
 		for j in range(l):
-			print("Grupo ", j, ": ", end="")
 			first = True
 			aux = []
 			for i in range(n):
 				if sol.get_value( "x[{}]_{}".format(j,i)) == 1:
-					print("\t", i, end="")
-					#print("Persona {} pertenece al grupo {}".format(i, j))
-			print()
+					grupos[j].append(str(i))
+				aux.append(sol.get_value("x[{}]_{}".format(j,i)) )
+			xx.append(aux)
+
+		for i in range(l):
+			print( "Grupo {}: {}".format(i, "\t".join(grupos[i])) )
+
+		""" 
+		print("\nOrden: \n", orden)
+		xx = np.array(xx)
+		print("\n")
+		for eje in range(len(EJES)):
+			print( EJES[eje] )
+			aux = np.dot(xx, data[eje])
+			print( aux )
+
+			for integrantes in grupos:
+				print("Grupo ")
+				for k in range(h-1):
+					aux[eje, ]
+
+			print("\n")
+		"""
 
 
 
