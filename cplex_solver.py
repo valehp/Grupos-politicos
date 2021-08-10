@@ -40,11 +40,12 @@ def get_data(n, file):
 
 def modelo(data, orden, n, l, m, h=4, n_axs=4):
 	model = Model()
+	#print("Data: ", data, "\n")
 
 	# Variables -> matrix X de LxN
 	x = []
 	for j in range(l):
-		x.append( model.integer_var_list(n, 0, 1, name="x[{}]".format(j)) )
+		x.append( model.integer_var_list(n, 0, 1, name="x{}".format(j)) )
 	x = np.array(x)
 
 
@@ -64,12 +65,32 @@ def modelo(data, orden, n, l, m, h=4, n_axs=4):
 		model.add_constraint( model.sum([ x[j,i] for j in range(l) ]) == 1 )
 
 
+	# ---- pruebas ---- #
+	"""
+	s = []
+	for e in range(len(EJES)):
+		s.append( np.dot(x, data[e]) )
+	s = np.array(s)
+	print("s -> ", s.shape)
+
+	model.minimize(model.sum([ model.max(s[e,j,k+1] - s[e,j,k], 0)  for k in range(h-1) for e in range(n_axs) for j in range(l) ]))
+	"""	
+
+	# Función objetivo
 	model.minimize(model.sum([ model.max([ model.scal_prod(x[j,:], data[e, :, orden[k+1,e]]) - model.scal_prod(x[j,:], data[e, :, orden[k,e]]), 0 ]) for k in range(h-1) for e in range(n_axs) for j in range(l) ]))
+	
+	# --- Escribir o imprimir el modelo --- #
+	#model.write("modelo{}.lp".format(n))
+	#model.get_cplex().write("modelito.lp")
+	#with open("modelito1.txt", "w") as file: file.write(model.export_as_lp_string())
+	#print(model.export_as_lp_string())
 
 	# k+1 = orden[k+1, e] ; k = orden[k, e]
 	print("Modelo listo...")
+	
 	inicio = time.time()
-	sol = model.solve()
+	model.parameters.timelimit = 120 
+	sol = model.solve(log_output=True)
 	final = time.time()
 
 	if sol:
@@ -89,15 +110,16 @@ def modelo(data, orden, n, l, m, h=4, n_axs=4):
 			first = True
 			aux = []
 			for i in range(n):
-				if sol.get_value( "x[{}]_{}".format(j,i)) == 1:
+				if sol.get_value( "x{}_{}".format(j,i)) == 1:
 					grupos[j].append(str(i))
-				aux.append(sol.get_value("x[{}]_{}".format(j,i)) )
+				aux.append(sol.get_value("x{}_{}".format(j,i)) )
 			xx.append(aux)
 
 		for i in range(l):
 			print( "Grupo {}: {}".format(i, "\t".join(grupos[i])) )
 
-		""" 
+		
+		"""
 		print("\nOrden: \n", orden)
 		xx = np.array(xx)
 		print("\n")
@@ -106,14 +128,15 @@ def modelo(data, orden, n, l, m, h=4, n_axs=4):
 			aux = np.dot(xx, data[eje])
 			print( aux )
 
+			
 			for integrantes in grupos:
 				print("Grupo ")
 				for k in range(h-1):
-					aux[eje, ]
-
+					aux[eje]
+			
 			print("\n")
-		"""
-
+		
+	"""
 
 
 
@@ -130,3 +153,8 @@ if __name__ == "__main__":
 
 	data, orden = get_data( args.num_personas, args.dataset_file )
 	modelo( data, orden, args.num_personas, args.num_grupos, args.max_personas )
+
+
+#model.minimize(
+#	model.sum([ model.max([ model.scal_prod(x[j,:], data[e, :, orden[k+1,e]]) - model.scal_prod(x[j,:], data[e, :, orden[k,e]]), 0 ]) for k in range(h-1) for e in range(n_axs) for j in range(l) ])
+#)
