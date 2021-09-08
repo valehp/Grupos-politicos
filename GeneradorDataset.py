@@ -51,7 +51,7 @@ def get_distribution(opciones_ejes, distribuciones_ejes, plots, random_ax):
 
 
 
-def get_hist(df, ejes, plots):
+def get_hist(df, ejes, plots=False):
     new_df = pd.DataFrame()
     order_df = pd.DataFrame()
     for eje in ejes:
@@ -89,6 +89,21 @@ def generar(personas, distribuciones, ejes ):
         df[eje] = ( datos[eje] - np.min(datos[eje]) ) / (np.max(datos[eje]) - np.min(datos[eje]))   # minmax scaler
 
     return df
+
+
+
+def GenerarDatos(personas, ejes=4, distribuciones=[]):     # Crear dataset sin venir del main
+    if not distribuciones: 
+        distribuciones_ejes = {
+            'economia'  : [ss.norm(), -4, 4], 
+            'diplomacia': [ss.norm(), -4, 4],
+            'estado'    : [ss.norm(), -4, 4],
+            'sociedad':  [ss.norm(), -4, 4],
+        }
+
+    data = generar(personas, distribuciones_ejes, ejes)
+    return data
+
 
 
 if __name__ == '__main__':

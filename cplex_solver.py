@@ -93,10 +93,10 @@ def modelo(data, orden, n, l, m, h=4, n_axs=4):
 		else:
 			df_sol = pd.read_csv(FILE, index_col=0)
 
-		print("Solución: ", sol.get_objective_value())
-		print("Tiempo: ", final-inicio)
-		df_sol = df_sol.append( pd.DataFrame( {"N":[n], "Solucion":[sol.get_objective_value()], "Tiempo":[final-inicio]} ), ignore_index=True )
-		df_sol.to_csv(FILE)
+		#print("Solución: ", sol.get_objective_value())
+		#print("Tiempo: ", final-inicio)
+		#df_sol = df_sol.append( pd.DataFrame( {"N":[n], "Solucion":[sol.get_objective_value()], "Tiempo":[final-inicio]} ), ignore_index=True )
+		#df_sol.to_csv(FILE)
 		xx = []
 		grupos = [ [] for i in range(l) ]
 		#print(sol)
