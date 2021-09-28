@@ -1,9 +1,10 @@
 import numpy as np
+import scipy.stats as ss
 from itertools import compress 
 
 
 class Greedy:
-	def __init__(self, data, M, L, tol=5e-1):
+	def __init__(self, data, M, L, tol=0.05):
 		self.data = data 										# Datos de las personas (4 numeros reales por persona)
 		self.M = M 												# Cantidad máxima de personas por grupo
 		self.L = L 												# Número de grupos
@@ -89,5 +90,72 @@ class Greedy:
 
 			if not i_listo:
 				self.UpdateGroup( indice_grupal, i, menor_promedio )
+
+		return self.grupos
+
+
+
+# ------------------------------------------------------ #
+# --- Greedy con Kurtosis por eje en vez de promedio --- #
+# ------------------------------------------------------ #
+
+class GreedyKurtosis(Greedy):
+	def __init__(self, data, M, L, tol=0.05):
+		Greedy.__init__(self, data, M, L, tol=0.05)
+		self.kurtosis_grupos = [ np.array([]) for i in range(L) ]
+		self.KurtosisGeneral = self.KurtosisEjes(data)
+
+	def KurtosisEjes(self, data):
+		k = []
+		if len(data.shape) == 1: return data
+		for i in range(4):
+			k.append( ss.kurtosis(data[:,i]) )
+
+		return np.array(k)
+
+	def UpdateGroup(self, index_grupo, index_data, kurt):
+		if len(self.grupos[index_grupo]) == 0: self.grupos[index_grupo] = [ self.data[index_data].tolist().copy() ]
+		else: 
+			grupo = self.grupos[index_grupo].copy()
+			grupo.append( self.data[index_data].tolist().copy() )
+			self.grupos[index_grupo] = grupo.copy()
+
+		self.kurtosis_grupos[index_grupo] = kurt
+		self.CheckGroup(index_grupo)
+
+
+	def Usar(self):
+
+		for i in range(len(self.data)):
+			menor_k = 10*np.ones(4)		# Guarda los promedios en todos los grupos, en caso que no cumpla la tolerancia
+			indice_grupal = 0
+			i_listo = False 					# Indica si el dato i se ingresó a un grupo o no
+
+			for j in list(compress( list(range(self.L)), ~self.listos )):
+
+				if len(self.grupos[j]) == 0:
+					#nuevo_promedio = self.PromedioEjes( self.data[i] )
+					self.UpdateGroup(j, i, self.data[i])
+					i_listo = True
+					break
+
+				aux = self.grupos[j].copy()
+				aux.append( self.data[i].tolist() )
+
+				nuevo_k = self.KurtosisEjes( np.array(aux, dtype=object) )
+
+				if (nuevo_k >= (self.KurtosisGeneral - self.tol)).all() and (nuevo_k <= (self.KurtosisGeneral - self.tol)).all():
+					self.UpdateGroup(j, i, nuevo_k)
+					i_listo = True
+					break
+
+				dif = abs( abs(self.KurtosisGeneral) - abs(nuevo_k) )
+				if (dif < menor_k).all():
+					menor_k = dif
+					indice_grupal = j
+					
+
+			if not i_listo:
+				self.UpdateGroup( indice_grupal, i, menor_k )
 
 		return self.grupos

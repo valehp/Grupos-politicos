@@ -1,0 +1,8 @@
+* Kurtosis N=1000 M=50 L=20 dataset 1 : 5.636338949203491 s
+* Kurtosis N=1000 M=50 L=20 dataset 2 : 5.848443031311035 s
+* Kurtosis N=1000 M=50 L=20 dataset 3 : 6.223899841308594 s
+* Kurtosis N=1000 M=50 L=20 dataset 4 : 6.319471120834351 s
+* Promedio N=1000 M=50 L=20 dataset 1 : 1.2243821620941162 s
+* Promedio N=1000 M=50 L=20 dataset 2 : 1.043137550354004 s
+* Promedio N=1000 M=50 L=20 dataset 3 : 1.2630045413970947 s
+* Promedio N=1000 M=50 L=20 dataset 4 : 1.1116533279418945 s

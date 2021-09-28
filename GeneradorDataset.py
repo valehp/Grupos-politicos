@@ -97,8 +97,8 @@ def GenerarDatos(personas, ejes=4, distribuciones=[]):     # Crear dataset sin v
         distribuciones_ejes = {
             'economia'  : [ss.norm(), -4, 4], 
             'diplomacia': [ss.norm(), -4, 4],
-            'estado'    : [ss.norm(), -4, 4],
-            'sociedad':  [ss.norm(), -4, 4],
+            'estado'    : [ss.beta(0.5, 0.5), 0, 1],
+            'sociedad':  [ss.beta(3, 1.5), 0, 1],
         }
 
     data = generar(personas, distribuciones_ejes, ejes)
