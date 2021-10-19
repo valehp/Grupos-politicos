@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd 
 import random, time
 import matplotlib.pyplot as plt
+from GeneradorDataset import *
 
 
 def run():
@@ -39,6 +40,28 @@ def run2():
 			os.system(com)
 
 
-# kurtosis
-#def kurt():
-run2()
+"""
+- normal:   [ss.norm(), -4, 4], 
+- beta-U:   [ss.beta(0.5, 0.5), 0, 1],
+- beta-Der: [ss.beta(3, 1.5), 0, 1],
+- bera-izq: [ss.beta(2, 5), 0, 1],
+"""
+def dataset():
+	N = 100000
+	distribuciones = {
+		'economia'  : 	[ss.norm(), -4, 4], 
+		'diplomacia':	[ss.norm(), -4, 4],
+		'estado'    :	[ss.norm(), -4, 4], 
+		'sociedad':  	[ss.norm(), -4, 4], 
+		'genero': 		[ss.norm(), -4, 4], 
+	}
+	datos = GenerarDatos(N, len(distribuciones.keys()), distribuciones)
+	datos.to_csv("./dataset/5ejes_100k_normales.csv")
+	print(datos.head())
+
+
+
+
+
+
+dataset()

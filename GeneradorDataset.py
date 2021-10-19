@@ -38,6 +38,7 @@ def get_distribution(opciones_ejes, distribuciones_ejes, plots, random_ax):
         if random_ax: dist, r, l = random.choice( opciones_ejes )
         else: dist, r, l = opciones_ejes[0]
         distribuciones_ejes[k] = [dist, r, l]
+
         if plots:
             x = np.linspace(r, l, 1000)
             axs[i][j].plot( x, dist.pdf(x) )
@@ -79,29 +80,35 @@ def get_hist(df, ejes, plots=False):
 
 def generar(personas, distribuciones, ejes ):
     df = pd.DataFrame()
-    datos = dict(zip( ejes, [ [] for i in range(len(ejes)) ] ))
+    datos = dict(zip( distribuciones.keys(), [ [] for i in range(ejes) ] ))
 
     for i in range(personas):
-        for eje in ejes:
-            datos[eje].append( distribuciones[eje][0].rvs() )
+        for eje in distribuciones.keys():
+            if eje == 'genero':
+                dato = distribuciones[eje][0].rvs()
+                dato = 0 if(dato<0.4) else 1
+                datos[eje].append(dato)
+            else: datos[eje].append( distribuciones[eje][0].rvs() )
 
-    for eje in ejes:
+    print(datos.keys())
+
+    for eje in distribuciones.keys():
         df[eje] = ( datos[eje] - np.min(datos[eje]) ) / (np.max(datos[eje]) - np.min(datos[eje]))   # minmax scaler
-
     return df
 
 
 
 def GenerarDatos(personas, ejes=4, distribuciones=[]):     # Crear dataset sin venir del main
     if not distribuciones: 
-        distribuciones_ejes = {
+        distribuciones = {
             'economia'  : [ss.norm(), -4, 4], 
             'diplomacia': [ss.norm(), -4, 4],
             'estado'    : [ss.beta(0.5, 0.5), 0, 1],
             'sociedad':  [ss.beta(3, 1.5), 0, 1],
+            'genero': [ss.beta(2, 5), 0, 1],
         }
 
-    data = generar(personas, distribuciones_ejes, ejes)
+    data = generar(personas, distribuciones, ejes)
     return data
 
 
@@ -120,7 +127,7 @@ if __name__ == '__main__':
     plots           = False     # False -> no grafica ; True -> Grafica los datos
 
 
-    ejes = ['economia', 'diplomacia', 'estado', 'sociedad']
+    ejes = ['economia', 'diplomacia', 'estado', 'sociedad', 'genero']
     opciones_ejes = [
         [ss.norm(), -4, 4], 
         [ss.beta(2, 5), 0, 1],
@@ -132,6 +139,7 @@ if __name__ == '__main__':
         'diplomacia': '',
         'estado'    : '',
         'sociedad':  '',
+        'genero':  '',
     }
 
 

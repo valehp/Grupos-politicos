@@ -6,7 +6,10 @@ import random, time
 import matplotlib.pyplot as plt
 import argparse
 import scipy.stats as ss
+import os
 
+EJES = ['economia', 'diplomacia', 'estado', 'sociedad']
+TITLES=['Economía', 'Diplomacia', 'Estado', 'Sociedad', 'Género']
 
 def plot_ejes(f, ax, i, data, bins, titles, colors, ylabel, p=False, k=False):
 	
@@ -21,66 +24,116 @@ def plot_ejes(f, ax, i, data, bins, titles, colors, ylabel, p=False, k=False):
 
 
 def graficar_greedy(args):
-	#data = GenerarDatos(10000, ['economia', 'diplomacia', 'estado', 'sociedad'])
-	if args.dataset == 1:
-		file = "./dataset/Dataset4ejes_10000.csv"
-		out  = "./Gráficos/"
-	elif args.dataset == 2:
-		file = "./dataset/Dataset4ejes_10000_(2).csv"
-		out  = "./Gráficos/(E) "
-	elif args.dataset == 3:
-		file = "./dataset/Dataset4ejes_10000_(3).csv"
-		out  = "./Gráficos/(S) "
-	elif args.dataset == 4:
-		#data.to_csv("./dataset/Dataset4ejes_10000_(4).csv")		# -> cambio distribución de sociedad y estado
-		file = "./dataset/Dataset4ejes_10000_(4).csv"
-		out  = "./Gráficos/(E+S) "
+	N, M, L = args.num_personas, args.max_personas, args.num_grupos
+	carpeta = "./Cambio promedio2/"
 
+
+	#carpeta, promedios = "./Resultados/", np.array([])
+
+	params = "N={} L={} M={}".format(N, L, M)
+	if params not in os.listdir(carpeta): os.mkdir(carpeta + params)
+	out = carpeta + params + "/"
+	
+	if args.dataset == 1:								# Todas las distribuciones son normales
+		file = "./dataset/Dataset4ejes_10000.csv"
+
+	elif args.dataset == 2:								# Cambio de distribución de estado
+		file = "./dataset/Dataset4ejes_10000_(2).csv"
+		if "Dataset 2" not in os.listdir(out): os.mkdir(out + "Dataset 2")
+		out += "Dataset 2/"
+
+	elif args.dataset == 3:								# Cambio de distribución de sociedad
+		file = "./dataset/Dataset4ejes_10000_(3).csv"
+		if "Dataset 3" not in os.listdir(out): os.mkdir(out + "Dataset 3")
+		out += "Dataset 3/"
+
+	elif args.dataset == 4:								# Cambio de distribución de estado y sociedad
+		file = "./dataset/Dataset4ejes_10000_(4).csv"
+		if "Dataset 4" not in os.listdir(out): os.mkdir(out + "Dataset 4")
+		out += "Dataset 4/"
+		#promedios = np.array([0.4, 0.4, 0.4, 0.4])
 	
 
-	#data.to_csv("./dataset/Dataset4ejes_10000.csv")
-	#data.to_csv("./dataset/Dataset4ejes_10000_(2).csv")		# -> cambio distribución de estado a "U"
-	#data.to_csv("./dataset/Dataset4ejes_10000_(3).csv")		# -> cambio distribución de sociedad a inclinación derecha
-	#data.to_csv("./dataset/Dataset4ejes_10000_(4).csv")		# -> cambio distribución de sociedad y estado
-
 	data = pd.read_csv(file, index_col=0)
-
-	N, M, L = args.num_personas, args.max_personas, args.num_grupos
 	data = data.head(N)
+	promedios = []
+	for eje in EJES:
+		promedios.append(  np.mean(data[eje]) )
+	promedios = np.array(promedios)
+	promedios += 0.1
 
 	if args.kurtosis:
-		g = GreedyKurtosis(data.to_numpy(), M, L, 0.05)
+		g = GreedyKurtosis(data.to_numpy(), M, L, len(EJES), 0.05)
 		out += "K-"
-	elif args.promedio: g = Greedy(data.to_numpy(), M, L, 0.05)
+	elif args.promedio: g = PromedioGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05)
 	start = time.time()
-	sol = g.Usar()
+	sol, x = g.Usar()
 	end = time.time()
 
 	print("Tiempo : ", end-start)
-	if args.time:
-		with open ("times.txt", "a") as file:
-			tipo = "Promedio" if (args.promedio) else "Kurtosis"
-			file.write( "* {} N={} M={} L={} dataset {} : {} s\n".format(tipo, N,M,L, args.dataset, end-start) )
+
+	print("Promedios: ", g.ObjGenerales)
+
+	mejor, peor = g.Mejor_Peor( out+"promedios.txt" )
+	print( "MEJOR -> Grupo {} \n\t {} -> dif: {}  \n".format(mejor[1], g.obj_grupales[mejor[1]-1] , mejor[0]) )
+	print( "PEOR  -> Grupo {} \n\t {} -> dif: {}  \n".format(peor[1], g.obj_grupales[peor[1]-1] , peor[0]) )
+
 
 	if args.grafico:
-		colors = ["firebrick", "limegreen", "turquoise", "purple"]
+
+		# Graficar distribuciones por grupos
+		colors = ["lightcoral", "limegreen", "turquoise", "violet"]
 		BINS = []
 		for i in range(4):
 			_, b = np.histogram( data.to_numpy()[:,i], bins=args.bins )
 			BINS.append(b)
 
-		f, ax = plt.subplots( L+1, 4, figsize=(30, 6*(L+1)) )
-
-		plot_ejes(f, ax, 0, data.to_numpy(), BINS, ['economia', 'diplomacia', 'estado', 'sociedad'], colors, "Gráfico de la población", p=args.promedio, k=args.kurtosis)
-
-		for i in range(L):
-		    plot_ejes(f, ax, i+1, np.array(sol[i]), BINS, ["", "", "", ""], colors, "Grupo " + str(i+1), p=args.promedio, k=args.kurtosis )
-
-
-		#f.suptitle("Gráficos para {} personas: {} grupos de {}.".format(N, L, M), size=25)
+			# --- Graficar las 4 distribuciones de toda la población --- #		hist( data[:,j], bins=bins[j], color=colors[j] )
+		size_grafico = (20, 5)
+		
+		print("Graficando distribuciones...")
+		f, ax = plt.subplots( 1, 4, figsize=size_grafico )
+		for e in range(len(EJES)):
+			ax[e].hist( data.to_numpy()[:,e], bins=BINS[e], color=colors[e] )
+			ax[e].set_title(TITLES[e], size=20)
 		f.tight_layout()
-		plt.savefig( "{}N={} M={} L={} B={}".format(out, N,M,L, args.bins) )
-		#plt.show()
+		f.savefig( "{}Poblacion".format(out) )
+		plt.close(f)
+
+
+			# --- Graficar cada uno de los grupos por eje --- #
+		print("Graficando grupos...")
+		for j in range(L):
+			grupo = np.array(sol[j])
+			f, ax = plt.subplots( 1, 4, figsize=size_grafico )
+			for e in range(len(EJES)):
+				ax[e].hist( grupo[:,e], bins=BINS[e], color=colors[e] )
+				ax[e].set_title(TITLES[e], size=20)
+			f.tight_layout()
+			f.savefig( "{}Grupo {}".format(out, j+1) )
+			plt.close(f)
+
+		
+
+			# --- Graficar promedios por grupos --- #
+		print("Graficando promedios...")
+		f, ax = plt.subplots( 2, 2, figsize=(10, 10))
+		x = [ i+1 for i in range(L) ]
+		i, j = 0, 0
+		for e in range(len(EJES)):
+			y = []
+			for l in range(L):
+				grupo = np.array(sol[l])
+				y.append( np.mean(grupo[:,e]) )
+			ax[i][j].bar( x, y, color=colors[e] )
+			ax[i][j].axhline( y=g.ObjGenerales[e], ls='--', color="black", lw=3.5, label="Promedio general" )
+			ax[i][j].legend()
+			ax[i][j].set_title(TITLES[e], size=20)
+			i += 1
+			if i == 2: i, j = 0, 1
+		f.tight_layout()
+		plt.savefig( "{}Promedios".format(out) )
+
 
 
 
@@ -97,8 +150,8 @@ if __name__ == "__main__":
 	parser.add_argument('--G', dest='grafico', action='store_true')
 	parser.add_argument('--NT', dest='time', action='store_false')
 	parser.add_argument('--NG', dest='grafico', action='store_false')
-	parser.set_defaults(time=False)
-	parser.set_defaults(grafico=True)
+	parser.set_defaults(time=True)
+	parser.set_defaults(grafico=False)
 	parser.add_argument('-n', '--num_personas', type=int, default=10)
 	parser.add_argument('-l', '--num_grupos', type=int, default=5)
 	parser.add_argument('-m', '--max_personas', type=int, default=2)
@@ -109,3 +162,30 @@ if __name__ == "__main__":
 
 	graficar_greedy(args)
 
+	# 	métrica -> error absoluto
+	# AGREGAR GENERO
+	# PONDERADOR ENTRE GÉNERO E IDEOLOGÍA POLÍTICA
+	#	-> kurtosis podría tener una ventaja??
+
+	# TERMINAR PROPUESTA
+	# pedir a secretaria el formato de tesis de postgrado -> empezar a escribir 
+	# expresar el problema como modelo de optimización
+
+
+	# PROPUESTA
+	#poner nuevo modelo
+	# poner que ya se tiene una heuristica con greedy
+	# poner graficos con resultados
+	# Distribución objetivo y genero será entregada
+
+
+	# EN LA DEFINICION DEL PROBLEMA -> PONER LO DE QUE VAMOS A BUSCAR OTROS PROMEDIOS (PAG 7)
+		# - CAMBIO DEL VALOR OBJETIVO
+
+
+
+	# aleatoriedad -> epsilon greedy (por ej: 5 mejores grupos y tiro la moneda)
+
+
+	# PARA 26/OCT:
+		# GRASP SOLO CON GREEDY ALEATORIZADO -> GREEDY RANDOM ITERATIVO
