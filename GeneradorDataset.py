@@ -112,6 +112,17 @@ def GenerarDatos(personas, ejes=4, distribuciones=[]):     # Crear dataset sin v
     return data
 
 
+"""
+distribuciones = {
+    'economia'  : [ss.norm(), -4, 4], 
+    'diplomacia': [ss.norm(), -4, 4], 
+    'estado'    : [ss.norm(), -4, 4], 
+    'sociedad':  [ss.beta(0.5, 0.5), 0, 1],
+    'genero': [ss.beta(2, 5), 0, 1],
+}
+
+"""
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generador de datos')

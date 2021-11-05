@@ -60,8 +60,24 @@ def dataset():
 	print(datos.head())
 
 
+def run3():
+	tipo_greedy = ["iterativo"] #["normal", "random", "iterativo"]
+	tipo_cambio = ["+", "-"]
+	command = "python main_greedy.py -n 1000 -l 50 -m 20 -b 10 --g -d 4 "
+
+	for greedy in tipo_greedy:
+		aux = "{} -tipog {}".format(command, greedy)
+		print(aux)
+		os.system(aux)
+
+		for cambio in tipo_cambio:
+			aux = "{} -tipog {} --cambio -tipoc {}".format(command, greedy, cambio)
+			print(aux)
+			os.system(aux)
 
 
 
+def save_data():
+	data = 
 
-dataset()
+run3()
