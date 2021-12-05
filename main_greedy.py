@@ -55,7 +55,10 @@ def graficar_greedy(args):
 	for eje in EJES:
 		promedios.append(  np.mean(data[eje]) )
 	promedios = np.array(promedios)
-	if args.objetivo_cambio:
+	if args.objetivo_custom:
+		promedios = np.random.rand(len(EJES))
+		print("NUEVO PROMEDIO: ", promedios)
+	elif args.objetivo_cambio:
 		if args.tipo_cambio == "+": promedios += 0.1
 		else: promedios -= 0.1 
 
@@ -64,6 +67,7 @@ def graficar_greedy(args):
 	else:
 		if args.tipo_cambio == "+": cambiop = 1
 		else: cambiop = -1
+
 
 	if guardar_dataset:
 		# Columnas: num, cambio promedio {-1, 0, 1}, promedio economia, promedio diplomacia, promedio estado, promedio sociedad, promedio genero 
@@ -79,18 +83,20 @@ def graficar_greedy(args):
 		else:
 			df = pd.read_csv( guardar_dataset+"datasets.csv", index_col=0 )
 			df2= pd.DataFrame()
-			if not df[ (df["num"] == args.dataset) & (df["Cambio promedio"] == cambiop) ].to_numpy().all():
+			aux =  df[ (df["num"] == args.dataset) & (df["Cambio promedio"] == cambiop) ].to_numpy()
+			print( aux.any() , aux.all() , "\n" )
+			if args.objetivo_custom or  (aux.any() and aux.all()):
 				df2["num"] = [args.dataset]
 				df2["Cambio promedio"] = [cambiop]
-			for i in range(len(TITLES)):
-				df2[TITLES[i]] = [promedios[i]]
-			df.append(df2, ignore_index=True)
-			df.to_csv(guardar_dataset + "datasets.csv")
+				for i in range(len(TITLES)):
+					df2[TITLES[i]] = [promedios[i]]
+				df = df.append(df2, ignore_index=True)
+				df.to_csv(guardar_dataset + "datasets.csv")
 
 
 	if args.tipo_greedy == "normal": 	  g = PromedioGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05)
 	elif args.tipo_greedy == "random": 	  g = RandomGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05)
-	elif args.tipo_greedy == "iterativo": g = RGI(data.to_numpy(), M, L, len(EJES), promedios,  0.05)
+	elif args.tipo_greedy == "iterativo": g = IteratedGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, it=30)
 
 
 
@@ -120,16 +126,16 @@ def graficar_greedy(args):
 	df["Tipo greedy"] 		= [args.tipo_greedy]
 	df["Cambio promedio"] 	= [cambiop]
 	df["Valor objetivo"] 	= [g.Objetivo]
+	df["Tiempo"] 			= [end - start]
 	for i in range(len(TITLES)):
 		df["Promedio "+TITLES[i]] = [g.Objetivo_ejes[i]]
-	print("df: \n", df.head())
 
 	resultados = "resultados.csv"
 	if resultados not in os.listdir(out):
 		df.to_csv( out+resultados )
 	else:
 		new_df = pd.read_csv( out+resultados, index_col=0 )
-		new_df.append( df, ignore_index=True )
+		new_df = new_df.append( df, ignore_index=True )
 		new_df.to_csv( out + resultados )
 
 
@@ -255,6 +261,9 @@ if __name__ == "__main__":
 	parser.add_argument('--ncambio', dest='objetivo_cambio', action='store_false')
 	parser.set_defaults(objetivo_promedio=True)
 	parser.set_defaults(objetivo_cambio=False)
+	parser.add_argument('--custom', dest='objetivo_custom', action='store_true')
+	parser.set_defaults(objetivo_custom=False)
+
 
 	parser.add_argument( '-tipog', '--tipo_greedy', type=str, choices=["normal", "random", "iterativo"], default="normal" )
 	parser.add_argument( '-tipoc', '--tipo_cambio', type=str, choices=["+", "-", ""], default="" )
@@ -265,6 +274,6 @@ if __name__ == "__main__":
 	parser.add_argument('-d', '--dataset', type=int, default=1)
 	parser.add_argument('-b', '--bins', type=int, default=4)
 	args = parser.parse_args()
-	print(args)
+	print("\n\n", "="*100, "\n",args)
 
 	graficar_greedy(args)

@@ -284,9 +284,10 @@ class RandomGreedy(PromedioGreedy):
 		self.n = n
 
 
-	def Usar(self):
+	def Usar(self, data=np.array([])):
+		if not data.size: data = self.data.copy()
 		self.CalcularObjetivo = self.PromedioEjes
-		for i in range(len(self.data)):
+		for i in range(len(data)):
 			mejor_obj = np.ones(self.ejes)		# Guarda los promedios en todos los grupos, en caso que no cumpla la tolerancia
 			indice_grupal = 0					# Guarda el índice al mejor grupo para agregar el dato i
 			i_listo = False 					# Indica si el dato i se ingresó a un grupo o no
@@ -302,7 +303,7 @@ class RandomGreedy(PromedioGreedy):
 					break
 
 				aux = self.grupos[j].copy()
-				aux.append( self.data[i].tolist() )
+				aux.append( data[i].tolist() )
 
 				nuevo_obj = self.CalcularObjetivo( np.array(aux, dtype=object) )
 
@@ -340,12 +341,14 @@ class RandomGreedy(PromedioGreedy):
 
 
 
+# --------------------------------------------- #
+# --- Greedy semi-aleatorio con iteraciones --- #
+# --------------------------------------------- #
 
-
-
-class RGI (RandomGreedy):			# Random Greedy Iterativo
-	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, r=0.2, n=5, it=20):
+class IteratedGreedy (RandomGreedy):			
+	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, r=0.05, n=5, it=20):
 		# r: porcentaje de aleatoreidad
+		# n: número de mejores grupos que guarda para hacer el cambio aleatorio
 		RandomGreedy.__init__(self, data, M, L, num_ejes, objetivos, tol, r, n)
 		self.MejorSolucion = np.array([])				# Guarda el mejor X obtenido
 		self.MejoresGrupos = np.array([])				# Guarda la solucion en forma de datos (para los gráficos)
@@ -360,21 +363,97 @@ class RGI (RandomGreedy):			# Random Greedy Iterativo
 		self.obj_grupales = [ np.array([]) for i in range(self.L) ]
 
 
+	def ActualizarMetrica(self, actual, grupos, X):
+		if actual < self.MejorMetrica:
+			self.MejorMetrica  = actual
+			self.MejoresGrupos = grupos
+			self.MejorSolucion = X
+			return True
+		return False
+
+
 	def Usar(self):
 		aux_obj_grupales = []
 
 		for it in range(self.it):
+			print("Iteracion \t", it)
 			self.reset()
 			grupos, X = RandomGreedy.Usar(self)
 			metrica   = self.FuncionObjetivo()
-			print( "\t Métrica {} : {}".format(it, metrica) )
-			if metrica < self.MejorMetrica:
-				print("CAMBIO!")
-				self.MejorMetrica  = metrica
-				self.MejoresGrupos = grupos
-				self.MejorSolucion = X
-				aux_obj_grupales   = self.obj_grupales
-			print("Mejor métrica: ", self.MejorMetrica, "\n")
+			if self.ActualizarMetrica( metrica, grupos, X ): aux_obj_grupales = self.obj_grupales
+
+
+		self.obj_grupales = aux_obj_grupales
+		self.Objetivo = self.MejorMetrica
+
+		return self.MejoresGrupos, self.MejorSolucion
+
+
+
+
+
+# ------------------------------------------------------------------------------------------------ #
+# --- Greedy iterativo semi-aleatorio con destrucción parcial de la solución en cada iteración --- #
+# ------------------------------------------------------------------------------------------------ #
+
+class IteratedGreedy (RandomGreedy):			
+	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, r=0.05, n=5, it=20, D=10):
+		# r: porcentaje de aleatoreidad
+		# n: número de mejores grupos que guarda para hacer el cambio aleatorio
+		# D: número de grupos a destruir
+		RandomGreedy.__init__(self, data, M, L, num_ejes, objetivos, tol, r, n)
+		self.MejorSolucion = np.array([])				# Guarda el mejor X obtenido
+		self.MejoresGrupos = np.array([])				# Guarda la solucion en forma de datos (para los gráficos)
+		self.MejorMetrica  = float('inf') 
+		self.it 		   = it
+		self.D 			   = D
+
+
+	def reset(self):
+		self.X = np.zeros( (len(self.data), self.L), dtype=bool )
+		self.grupos = [ [] for i in range(self.L) ] 
+		self.listos = np.array([ False for i in range(self.L) ])
+		self.obj_grupales = [ np.array([]) for i in range(self.L) ]
+
+
+	def DestruirGrupos(self):
+		# grupo: índice del grupo a destruir
+		contador = 0			# Retorna la cantidad de personas que se quedan sin grupo
+		for i in range( self.L-1, self.L-1-self.D, -1 ):	
+
+			contador += len(self.grupos[i])
+			self.listos[i] 	= False
+			self.X[:,i] 	= np.zeros( len(self.data) ).copy()
+			self.grupos[i] 	= []
+
+		return contador
+
+
+	def ActualizarMetrica(self, actual, grupos, X):
+		if actual < self.MejorMetrica:
+			print("METRICA ACTUALIZADA -> ", actual)
+			self.MejorMetrica  = actual
+			self.MejoresGrupos = grupos
+			self.MejorSolucion = X
+			return True
+		return False
+
+
+	def Usar(self):
+		aux_obj_grupales = []
+
+		for it in range(self.it):
+			print("Iteracion \t", it)
+			self.reset()
+			grupos, X = RandomGreedy.Usar(self)
+			metrica   = self.FuncionObjetivo()
+			if self.ActualizarMetrica( metrica, grupos, X ): aux_obj_grupales = self.obj_grupales
+
+			personas = self.DestruirGrupos()
+			grupos, X = RandomGreedy.Usar(self, self.data[ len(self.data)-personas-1: ])
+			if self.ActualizarMetrica( metrica, grupos, X ): aux_obj_grupales = self.obj_grupales
+
+
 
 		self.obj_grupales = aux_obj_grupales
 		self.Objetivo = self.MejorMetrica
