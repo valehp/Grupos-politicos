@@ -9,9 +9,8 @@ import scipy.stats as ss
 import os
 from Metricas import *
 
-EJES = ['economia', 'diplomacia', 'estado', 'sociedad', 'genero']
-TITLES=['Economía', 'Diplomacia', 'Estado', 'Sociedad', 'Género']
-
+EJES  = ['economia-p', 'diplomacia-p', 'estado-p', 'sociedad-p', 'genero', 'economia-i', 'diplomacia-i', 'estado-i', 'sociedad-i']
+TITLES= ['Economía (P)', 'Diplomacia (P)', 'Estado (P)', 'Sociedad (P)', 'Género (P)', 'Economía (IDL)', 'Diplomacia (IDL)', 'Estado (IDL)', 'Sociedad (IDL)']
 
 
 
@@ -147,7 +146,7 @@ def graficar_greedy(args):
 		colors = ["lightcoral", "limegreen", "turquoise", "violet", "lightslategrey"]
 		BINS = []
 		for i in range(len(EJES)):
-			bins = 2 if (EJES[i] == 'genero') else args.bins
+			bins = 3 if (EJES[i] == 'genero') else args.bins
 			_, b = np.histogram( data.to_numpy()[:,i], bins=bins )
 			BINS.append(b)
 
@@ -161,8 +160,8 @@ def graficar_greedy(args):
 				ax[e].hist( data.to_numpy()[:,e], bins=BINS[e], color=colors[e] )
 				ax[e].set_title(TITLES[e], size=20)
 				if EJES[e] == 'genero':
-					ax[e].set_xticks([0.25, 0.75])
-					ax[e].set_xticklabels(["F", "M"])
+					ax[e].set_xticks([0.25, 0.5, 0.75])
+					ax[e].set_xticklabels(["F", "M", "NB"])
 			f.tight_layout()
 			f.savefig( "{}Poblacion".format(out) )
 			plt.close(f)
@@ -176,8 +175,8 @@ def graficar_greedy(args):
 			ax[e].hist( np.array(mejor_grupo)[:,e], bins=BINS[e], color=colors[e] )
 			ax[e].set_title(TITLES[e], size=20)
 			if EJES[e] == 'genero':
-				ax[e].set_xticks([0.25, 0.75])
-				ax[e].set_xticklabels(["F", "M"])
+				ax[e].set_xticks([0.25, 0.5, 0.75])
+				ax[e].set_xticklabels(["F", "M", "NB"])
 		f.tight_layout()
 		f.savefig( "{}Mejor {} {}".format(out, args.tipo_greedy, cambiop) )
 		plt.close(f)
@@ -189,8 +188,8 @@ def graficar_greedy(args):
 			ax[e].hist( np.array(peor_grupo)[:,e], bins=BINS[e], color=colors[e] )
 			ax[e].set_title(TITLES[e], size=20)
 			if EJES[e] == 'genero':
-				ax[e].set_xticks([0.25, 0.75])
-				ax[e].set_xticklabels(["F", "M"])
+				ax[e].set_xticks([0.25, 0.5, 0.75])
+				ax[e].set_xticklabels(["F", "M", "NB"])
 		f.tight_layout()
 		f.savefig( "{}Peor {} {}".format(out, args.tipo_greedy, cambiop) )
 		plt.close(f)

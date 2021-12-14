@@ -6,7 +6,7 @@ from Metricas import *
 
 
 class BaseGreedy:
-	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, alpha=0.5, ejes_alpha=4, beta=0.5, ejes_beta=1, gamma=0, ejes_gamma=0):
+	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, alpha=0.33, ejes_alpha=4, beta=0.33, ejes_beta=1, gamma=0.33, ejes_gamma=4):
 		self.data = data 										# Datos de las personas (4 numeros reales por persona)
 		self.M = M 												# Cantidad máxima de personas por grupo
 		self.L = L 												# Número de grupos

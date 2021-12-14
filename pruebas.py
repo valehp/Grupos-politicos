@@ -82,7 +82,7 @@ def run4():
 
 
 	for greedy in tipo_greedy:
-		aux = "{} -tipog {} --custom".format(command, greedy)
+		aux = "{} -tipog {}".format(command, greedy)
 		print(aux)
 		os.system(aux)
 

@@ -84,18 +84,20 @@ def generar(personas, distribuciones, ejes ):
 
     for i in range(personas):
         for eje in distribuciones.keys():
-            if eje == 'genero':
-                dato = distribuciones[eje][0].rvs()
-                dato = 0 if(dato<0.4) else 1
-                datos[eje].append(dato)
-            else: datos[eje].append( distribuciones[eje][0].rvs() )
+          datos[eje].append( distribuciones[eje][0].rvs() )
 
     print(datos.keys())
 
     for eje in distribuciones.keys():
         df[eje] = ( datos[eje] - np.min(datos[eje]) ) / (np.max(datos[eje]) - np.min(datos[eje]))   # minmax scaler
-    return df
 
+        if eje == 'genero':
+          for i in range(len(df[eje])):
+            if df.at[i,eje] <= 0.33: df.at[i,eje] = 0
+            elif df.at[i,eje] < 0.67: df.at[i,eje] = 0.5
+            else: df.at[i,eje] = 1
+
+    return df
 
 
 def GenerarDatos(personas, ejes=4, distribuciones=[]):     # Crear dataset sin venir del main
@@ -120,6 +122,13 @@ distribuciones = {
     'sociedad':  [ss.beta(0.5, 0.5), 0, 1],
     'genero': [ss.beta(2, 5), 0, 1],
 }
+
+opciones_ejes = [
+    [ss.norm(), -4, 4], 
+    [ss.beta(2, 5), 0, 1],
+    [ss.beta(0.5, 0.5), 0, 1],
+    [ss.beta(3, 1.5), 0, 1],
+]
 
 """
 
