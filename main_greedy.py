@@ -10,17 +10,24 @@ import os
 from Metricas import *
 
 EJES  = ['economia-p', 'diplomacia-p', 'estado-p', 'sociedad-p', 'genero', 'economia-i', 'diplomacia-i', 'estado-i', 'sociedad-i']
-TITLES= ['Economía (P)', 'Diplomacia (P)', 'Estado (P)', 'Sociedad (P)', 'Género (P)', 'Economía (IDL)', 'Diplomacia (IDL)', 'Estado (IDL)', 'Sociedad (IDL)']
+TITLES= ['Economía (P)', 'Diplomacia (P)', 'Estado (P)', 'Sociedad (P)', 'Género', 'Economía (IDL)', 'Diplomacia (IDL)', 'Estado (IDL)', 'Sociedad (IDL)']
 
 
 
 def graficar_greedy(args):
 	N, M, L = args.num_personas, args.max_personas, args.num_grupos
 
+	out = "./Resultados/{}/".format(args.dataset)
+	params = "N={} L={} M={}".format(N, L, M)
+	if params not in os.listdir(out): os.mkdir(out + params)
+	out += params + "/"
+	guardar_dataset = out
 
-	carpeta = "./5ejes/"
+	file = "./Dataset/Dataset{}.csv".format(args.dataset)
+
+
  
-
+	"""
 	params = "N={} L={} M={}".format(N, L, M)
 	if params not in os.listdir(carpeta): os.mkdir(carpeta + params)
 	out = carpeta + params + "/"
@@ -45,7 +52,7 @@ def graficar_greedy(args):
 		file = "./5ejes/dataset_4.csv"
 		if nuevo not in os.listdir(out): os.mkdir(out + nuevo)
 		out += nuevo + "/"
-	
+	"""
 
 	data = pd.read_csv(file, index_col=0)
 	data = data.head(N)
@@ -67,7 +74,7 @@ def graficar_greedy(args):
 		if args.tipo_cambio == "+": cambiop = 1
 		else: cambiop = -1
 
-
+	"""
 	if guardar_dataset:
 		# Columnas: num, cambio promedio {-1, 0, 1}, promedio economia, promedio diplomacia, promedio estado, promedio sociedad, promedio genero 
 
@@ -91,6 +98,7 @@ def graficar_greedy(args):
 					df2[TITLES[i]] = [promedios[i]]
 				df = df.append(df2, ignore_index=True)
 				df.to_csv(guardar_dataset + "datasets.csv")
+	"""
 
 
 	if args.tipo_greedy == "normal": 	  g = PromedioGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05)
@@ -143,7 +151,8 @@ def graficar_greedy(args):
 	if args.grafico:
 
 		# Graficar distribuciones por grupos
-		colors = ["lightcoral", "limegreen", "turquoise", "violet", "lightslategrey"]
+		#colors = ["lightcoral", "limegreen", "turquoise", "violet", "lightslategrey"]
+		colors = ["firebrick", "darkorange", "sienna", "gold", "lightslategrey", "seagreen", "turquoise", "mediumblue", "blueviolet"]
 		BINS = []
 		for i in range(len(EJES)):
 			bins = 3 if (EJES[i] == 'genero') else args.bins
@@ -151,73 +160,95 @@ def graficar_greedy(args):
 			BINS.append(b)
 
 		# --- Graficar las 4 distribuciones de toda la población --- #		hist( data[:,j], bins=bins[j], color=colors[j] )
-		size_grafico = (20, 5)
+		size_grafico = (15, 15)
+		e = 0
 		
 		if not "Poblacion.png" in os.listdir(out):
 			print("Graficando distribuciones...")
-			f, ax = plt.subplots( 1, len(EJES), figsize=size_grafico )
-			for e in range(len(EJES)):
-				ax[e].hist( data.to_numpy()[:,e], bins=BINS[e], color=colors[e] )
-				ax[e].set_title(TITLES[e], size=20)
-				if EJES[e] == 'genero':
-					ax[e].set_xticks([0.25, 0.5, 0.75])
-					ax[e].set_xticklabels(["F", "M", "NB"])
+			f, axs = plt.subplots( 3, 3, figsize=size_grafico )
+			for i in range(3):
+				for j in range(3):
+					axs[i][j].hist(data.to_numpy()[:,e], bins=BINS[e], color=colors[e])
+					axs[i][j].set_title(TITLES[e], size=20)
+					if EJES[e] == 'genero':
+						axs[i][j].set_xticks([0.2, 0.5, 0.8])
+						axs[i][j].set_xticklabels(["F", "M", "NB"])
+					e +=1 
 			f.tight_layout()
 			f.savefig( "{}Poblacion".format(out) )
 			plt.close(f)
+				#plt.show()
 
 
 		# --- Graficar cada uno de los grup
 		# Graficar mejor grupo
 		mejor_grupo = sol[ mejor[1] ]
-		f, ax = plt.subplots( 1, len(EJES), figsize=size_grafico )
-		for e in range(len(EJES)):
-			ax[e].hist( np.array(mejor_grupo)[:,e], bins=BINS[e], color=colors[e] )
-			ax[e].set_title(TITLES[e], size=20)
-			if EJES[e] == 'genero':
-				ax[e].set_xticks([0.25, 0.5, 0.75])
-				ax[e].set_xticklabels(["F", "M", "NB"])
+		f, axs = plt.subplots( 3, 3, figsize=size_grafico )
+		e = 0 
+		for i in range(3):
+			for j in range(3):
+				axs[i][j].hist(np.array(mejor_grupo)[:,e], bins=BINS[e], color=colors[e])
+				axs[i][j].set_title(TITLES[e], size=20)
+				if EJES[e] == 'genero':
+					axs[i][j].set_xticks([0.2, 0.5, 0.8])
+					axs[i][j].set_xticklabels(["F", "M", "NB"])
+				e +=1 
 		f.tight_layout()
 		f.savefig( "{}Mejor {} {}".format(out, args.tipo_greedy, cambiop) )
 		plt.close(f)
 
+
+
 		# Graficar peor grupo
 		peor_grupo = sol[ peor[1] ]
-		f, ax = plt.subplots( 1, len(EJES), figsize=size_grafico )
-		for e in range(len(EJES)):
-			ax[e].hist( np.array(peor_grupo)[:,e], bins=BINS[e], color=colors[e] )
-			ax[e].set_title(TITLES[e], size=20)
-			if EJES[e] == 'genero':
-				ax[e].set_xticks([0.25, 0.5, 0.75])
-				ax[e].set_xticklabels(["F", "M", "NB"])
+		f, axs = plt.subplots( 3, 3, figsize=size_grafico )
+		e = 0 
+		for i in range(3):
+			for j in range(3):
+				axs[i][j].hist(np.array(peor_grupo)[:,e], bins=BINS[e], color=colors[e])
+				axs[i][j].set_title(TITLES[e], size=20)
+				if EJES[e] == 'genero':
+					axs[i][j].set_xticks([0.2, 0.5, 0.8])
+					axs[i][j].set_xticklabels(["F", "M", "NB"])
+				e +=1 
 		f.tight_layout()
 		f.savefig( "{}Peor {} {}".format(out, args.tipo_greedy, cambiop) )
 		plt.close(f)
-
-		# os por eje --- #
-
-
-
-		"""
-		print("Graficando grupos...")
-		for j in range(L):
-			grupo = np.array(sol[j])
-			f, ax = plt.subplots( 1, len(EJES), figsize=size_grafico )
-			for e in range(len(EJES)):
-				ax[e].hist( grupo[:,e], bins=BINS[e], color=colors[e] )
-				ax[e].set_title(TITLES[e], size=20)
-				if EJES[e] == 'genero':
-					ax[e].set_xticks([0.25, 0.75])
-					ax[e].set_xticklabels(["F", "M"])
-			f.tight_layout()
-			f.savefig( "{}Grupo {}".format(out, j+1) )
-			plt.close(f)
-		"""
 
 
 
 			# --- Graficar promedios por grupos --- #
 		print("Graficando promedios...")
+		f, axs = plt.subplots( 3, 3, figsize=size_grafico )		
+		x = [ i+1 for i in range(L) ]	
+		e = 0 
+		for i in range(3):
+			for j in range(3):
+
+				y = []
+				for l in range(L):
+					grupo = np.array(sol[l])
+					y.append( np.mean(grupo[:,e]) )
+				axs[i][j].bar( x, y, color=colors[e] )
+				axs[i][j].axhline( y=g.ObjGenerales[e], ls='--', color="black", lw=3.5, label="Promedio general" )
+				axs[i][j].legend()
+				axs[i][j].set_title(TITLES[e], size=20)
+				e +=1 
+		f.tight_layout()
+		plt.savefig( "{}Promedios {} {}".format(out, args.tipo_greedy, cambiop) )
+
+"""
+
+				axs[i][j].hist(np.array(mejor_grupo)[:,e], bins=BINS[e])
+				axs[i][j].set_title(TITLES[e], size=20)
+				if EJES[e] == 'genero':
+					axs[i][j].set_xticks([0.2, 0.5, 0.8])
+					axs[i][j].set_xticklabels(["F", "M", "NB"])
+				e +=1 
+		f.tight_layout()
+		f.savefig( "{}Mejor {} {}".format(out, args.tipo_greedy, cambiop) )
+		plt.close(f)
+
 		f, ax = plt.subplots( 2, 3, figsize=(20, 10))
 		
 		x = [ i+1 for i in range(L) ]
@@ -235,6 +266,7 @@ def graficar_greedy(args):
 			if i == 3: i, j = 0, 1
 		f.tight_layout()
 		plt.savefig( "{}Promedios {} {}".format(out, args.tipo_greedy, cambiop) )
+"""
 
 
 
@@ -270,7 +302,7 @@ if __name__ == "__main__":
 	parser.add_argument('-n', '--num_personas', type=int, default=10)
 	parser.add_argument('-l', '--num_grupos', type=int, default=5)
 	parser.add_argument('-m', '--max_personas', type=int, default=2)
-	parser.add_argument('-d', '--dataset', type=int, default=1)
+	parser.add_argument('-d', '--dataset', type=int, default=1, choices=[1, 2, 3])
 	parser.add_argument('-b', '--bins', type=int, default=4)
 	args = parser.parse_args()
 	print("\n\n", "="*100, "\n",args)

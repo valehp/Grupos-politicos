@@ -2,7 +2,7 @@ import numpy as np
 import scipy.stats as ss
 from itertools import compress 
 import random
-from Metricas import *
+#from Metricas import *
 
 
 class BaseGreedy:
@@ -54,11 +54,11 @@ class BaseGreedy:
 			total[0] += suma[i]
 
 		# Suma componente de género
-		for i in range(self.ejes_alpha, self.ejes_beta, 1):
+		for i in range(self.ejes_alpha, self.ejes_alpha+self.ejes_beta, 1):
 			total[1] += suma[i]
 
 		# Suma componente colaborativa
-		for i in range(self.ejes_alpha+self.ejes_beta, self.ejes_gamma, 1):
+		for i in range(self.ejes_alpha+self.ejes_beta, self.ejes_alpha+self.ejes_beta+self.ejes_gamma, 1):
 			total[2] += suma[i]
 
 		self.Objetivo = self.alpha * total[0] + self.beta * total[1] + self.gamma * total[2]
