@@ -38,3 +38,36 @@ def CalcularEjes(total, grupos):	# Función auxiliar para calcular función obje
 		#print("\n")
 
 	return suma
+
+
+
+def FuncionObjetivo(alpha, ejes_alpha, beta, ejes_beta, gamma, ejes_gamma, grupos, N, M, L, ObjGenerales ):
+	# Componente política
+	P = 0
+	for j in range(L):
+		grupo = np.array(grupos[j])
+		promedios = np.mean( grupo[:ejes_alpha] )
+		dif = abs( ObjGenerales[:ejes_alpha] - promedios )
+		P += np.sum(dif)
+
+
+	# Componente de género
+	G = 0
+	for j in range(L):
+		grupo = np.array(grupos[j])[:, ejes_alpha]
+		f, nb, m = (grupo==0).sum()/len(grupo), (grupo==0.5).sum()/len(grupo), (grupo==1).sum()/len(grupo)
+		generos = np.array([f, nb, m])
+		dif = abs( ObjGenerales[ejes_alpha] - generos )
+		G += np.sum(dif)
+
+
+	# Componente de grupos colaborativos
+	C = 0
+	for j in range(L):
+		grupo = np.array(grupos[j])
+		promedios = np.mean( grupo[ejes_alpha+ejes_beta:] )
+		dif = abs( ObjGenerales[ejes_alpha+ejes_beta:] - promedios )
+		C += np.sum(dif)
+
+	Objetivo = alpha * P + beta * G + gamma * C
+	return Objetivo

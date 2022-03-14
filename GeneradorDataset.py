@@ -92,10 +92,13 @@ def generar(personas, distribuciones, ejes ):
         df[eje] = ( datos[eje] - np.min(datos[eje]) ) / (np.max(datos[eje]) - np.min(datos[eje]))   # minmax scaler
 
         if eje == 'genero':
-          for i in range(len(df[eje])):
-            if df.at[i,eje] <= 0.33: df.at[i,eje] = 0
-            elif df.at[i,eje] < 0.67: df.at[i,eje] = 0.5
-            else: df.at[i,eje] = 1
+            # 0     -> F
+            # 0.5   -> No binario
+            # 1     -> M
+            for i in range(len(df[eje])):
+                if df.at[i,eje] <= 0.33: df.at[i,eje] = 0
+                elif df.at[i,eje] < 0.67: df.at[i,eje] = 0.5
+                else: df.at[i,eje] = 1
 
     return df
 

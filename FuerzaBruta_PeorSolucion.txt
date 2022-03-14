@@ -1,0 +1,350 @@
+
+ - N: 4 M: 2 L:2 Dataset: 2 exponente: 1 minmax: False
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:3,0300705195420834
+	Tiempo: 0,0040247440338134766
+	Política: 1,4335763956220422 ; Género: 1,0 ; Colaborativo: 0,5964941239200414
+
+ - N: 6 M: 2 L:3 Dataset: 2 exponente: 1 minmax: False
+	Solución:(0, 1, 2, 5, 3, 4)
+	Valor Objetivo:5,553989048774796
+	Tiempo: 0,011997699737548828
+	Política: 2,5141393245589043 ; Género: 2,0 ; Colaborativo: 1,0398497242158917
+
+ - N: 6 M: 3 L:2 Dataset: 2 exponente: 1 minmax: False
+	Solución:(0, 1, 2, 3, 4, 5)
+	Valor Objetivo:4,093025177494052
+	Tiempo: 0,007997751235961914
+	Política: 1,3175067943577927 ; Género: 2,0 ; Colaborativo: 0,7755183831362593
+
+ - N: 8 M: 2 L:4 Dataset: 2 exponente: 1 minmax: False
+	Solución:(0, 1, 2, 7, 3, 5, 4, 6)
+	Valor Objetivo:8,74453980363125
+	Tiempo: 0,3360025882720947
+	Política: 3,172621600375328 ; Género: 4,25 ; Colaborativo: 1,3219182032559231
+
+ - N: 8 M: 4 L:2 Dataset: 2 exponente: 1 minmax: False
+	Solución:(0, 1, 2, 7, 3, 4, 5, 6)
+	Valor Objetivo:4,091288010585524
+	Tiempo: 0,2319953441619873
+	Política: 1,16030303809104 ; Género: 2,0 ; Colaborativo: 0,9309849724944838
+
+ - N: 10 M: 2 L:5 Dataset: 2 exponente: 1 minmax: False
+	Solución:(0, 2, 1, 6, 3, 4, 5, 8, 7, 9)
+	Valor Objetivo:12,272513485479026
+	Tiempo: 58,53186750411987
+	Política: 4,515263025287531 ; Género: 5,4 ; Colaborativo: 2,3572504601914943
+
+ - N: 10 M: 5 L:2 Dataset: 2 exponente: 1 minmax: False
+	Solución:(0, 1, 2, 7, 9, 3, 4, 5, 6, 8)
+	Valor Objetivo:4,264932906449728
+	Tiempo: 21,27524447441101
+	Política: 1,1054001695256406 ; Género: 2,0 ; Colaborativo: 1,159532736924087
+
+====================================================================================================
+
+ - N: 4 M: 2 L:2 Dataset: 2 exponente: 2 minmax: False
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:0,7946428480581171
+	Tiempo: 0,003999948501586914
+	Política: 0,4467872153830378 ; Género: 0,25 ; Colaborativo: 0,09785563267507937
+
+ - N: 6 M: 2 L:3 Dataset: 2 exponente: 2 minmax: False
+	Solución:(0, 2, 1, 4, 3, 5)
+	Valor Objetivo:1,8841741065235675
+	Tiempo: 0,016831636428833008
+	Política: 0,7389651182579452 ; Género: 1,0 ; Colaborativo: 0,14520898826562237
+
+ - N: 6 M: 3 L:2 Dataset: 2 exponente: 2 minmax: False
+	Solución:(0, 1, 2, 3, 4, 5)
+	Valor Objetivo:1,5172524570495796
+	Tiempo: 0,01599907875061035
+	Política: 0,4127812734937608 ; Género: 1,0 ; Colaborativo: 0,10447118355581872
+
+ - N: 8 M: 2 L:4 Dataset: 2 exponente: 2 minmax: False
+	Solución:(0, 1, 2, 7, 3, 5, 4, 6)
+	Valor Objetivo:2,9678078493107787
+	Tiempo: 0,3480854034423828
+	Política: 0,8798895359189962 ; Género: 1,875 ; Colaborativo: 0,21291831339178224
+
+ - N: 8 M: 4 L:2 Dataset: 2 exponente: 2 minmax: False
+	Solución:(0, 1, 2, 7, 3, 4, 5, 6)
+	Valor Objetivo:1,247237442530781
+	Tiempo: 0,23199915885925293
+	Política: 0,29286143700934864 ; Género: 0,8125 ; Colaborativo: 0,14187600552143254
+
+ - N: 10 M: 2 L:5 Dataset: 2 exponente: 2 minmax: False
+	Solución:(0, 2, 3, 4, 1, 6, 5, 8, 7, 9)
+	Valor Objetivo:4,4177983498143325
+	Tiempo: 35,196884632110596
+	Política: 1,4431756439523746 ; Género: 2,6 ; Colaborativo: 0,374622705861958
+
+ - N: 10 M: 5 L:2 Dataset: 2 exponente: 2 minmax: False
+	Solución:(0, 1, 2, 7, 9, 3, 4, 5, 6, 8)
+	Valor Objetivo:1,1900637639836535
+	Tiempo: 19,943779230117798
+	Política: 0,23318372787682448 ; Género: 0,76 ; Colaborativo: 0,19688003610682903
+
+====================================================================================================
+
+ - N: 4 M: 2 L:2 Dataset: 2 exponente: 3 minmax: False
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:0,2548513189590455
+	Tiempo: 0,00400233268737793
+	Política: 0,1706264942728286 ; Género: 0,0625 ; Colaborativo: 0,0217248246862169
+
+ - N: 6 M: 2 L:3 Dataset: 2 exponente: 3 minmax: False
+	Solución:(0, 2, 1, 4, 3, 5)
+	Valor Objetivo:0,8039493063645463
+	Tiempo: 0,011999130249023438
+	Política: 0,2771334887593641 ; Género: 0,5 ; Colaborativo: 0,026815817605182105
+
+ - N: 6 M: 3 L:2 Dataset: 2 exponente: 3 minmax: False
+	Solución:(0, 1, 2, 3, 4, 5)
+	Valor Objetivo:0,6765487933547334
+	Tiempo: 0,011996984481811523
+	Política: 0,1588818402392129 ; Género: 0,5 ; Colaborativo: 0,017666953115520457
+
+ - N: 8 M: 2 L:4 Dataset: 2 exponente: 3 minmax: False
+	Solución:(0, 2, 1, 7, 3, 5, 4, 6)
+	Valor Objetivo:1,261934301245733
+	Tiempo: 0,3522953987121582
+	Política: 0,298407898635177 ; Género: 0,91015625 ; Colaborativo: 0,053370152610555985
+
+ - N: 8 M: 4 L:2 Dataset: 2 exponente: 3 minmax: False
+	Solución:(0, 1, 2, 7, 3, 4, 5, 6)
+	Valor Objetivo:0,4775399660186128
+	Tiempo: 0,23701906204223633
+	Política: 0,09238446482791816 ; Género: 0,359375 ; Colaborativo: 0,025780501190694617
+
+ - N: 10 M: 2 L:5 Dataset: 2 exponente: 3 minmax: False
+	Solución:(1, 6, 3, 4, 5, 8, 7, 9, 0, 2)
+	Valor Objetivo:2,071163585132686
+	Tiempo: 35,18593955039978
+	Política: 0,5259755327715818 ; Género: 1,4760000000000002 ; Colaborativo: 0,06918805236110384
+
+ - N: 10 M: 5 L:2 Dataset: 2 exponente: 3 minmax: False
+	Solución:(0, 1, 2, 7, 9, 3, 4, 5, 6, 8)
+	Valor Objetivo:0,4164273304835368
+	Tiempo: 20,02532958984375
+	Política: 0,0591094790487637 ; Género: 0,32 ; Colaborativo: 0,03731785143477314
+
+====================================================================================================
+
+ - N: 4 M: 2 L:2 Dataset: 2 exponente: 4 minmax: False
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:0,09547387629113568
+	Tiempo: 0,004015207290649414
+	Política: 0,07445258893704561 ; Género: 0,015625 ; Colaborativo: 0,005396287354090071
+
+ - N: 6 M: 2 L:3 Dataset: 2 exponente: 4 minmax: False
+	Solución:(0, 2, 1, 4, 3, 5)
+	Valor Objetivo:0,3708105954490962
+	Tiempo: 0,011972904205322266
+	Política: 0,11482597967483363 ; Género: 0,25 ; Colaborativo: 0,005984615774262563
+
+ - N: 6 M: 3 L:2 Dataset: 2 exponente: 4 minmax: False
+	Solución:(0, 1, 2, 3, 4, 5)
+	Valor Objetivo:0,32060819958430486
+	Tiempo: 0,01204061508178711
+	Política: 0,06714359269763798 ; Género: 0,25 ; Colaborativo: 0,003464606886666867
+
+ - N: 8 M: 2 L:4 Dataset: 2 exponente: 4 minmax: False
+	Solución:(0, 2, 1, 7, 3, 5, 4, 6)
+	Valor Objetivo:0,5944833288010927
+	Tiempo: 0,4678628444671631
+	Política: 0,11689388394361315 ; Género: 0,462890625 ; Colaborativo: 0,014698819857479582
+
+ - N: 8 M: 4 L:2 Dataset: 2 exponente: 4 minmax: False
+	Solución:(0, 1, 2, 7, 3, 4, 5, 6)
+	Valor Objetivo:0,20200649955437444
+	Tiempo: 0,25999879837036133
+	Política: 0,03180718119749094 ; Género: 0,1650390625 ; Colaborativo: 0,005160255856883504
+
+ - N: 10 M: 2 L:5 Dataset: 2 exponente: 4 minmax: False
+	Solución:(0, 2, 1, 6, 3, 4, 5, 8, 7, 9)
+	Valor Objetivo:1,1564226853021622
+	Tiempo: 35,60826134681702
+	Política: 0,21032328225167624 ; Género: 0,9319999999999999 ; Colaborativo: 0,014099403050486004
+
+ - N: 10 M: 5 L:2 Dataset: 2 exponente: 4 minmax: False
+	Solución:(0, 1, 2, 7, 9, 3, 4, 5, 6, 8)
+	Valor Objetivo:0,16862305738078798
+	Tiempo: 21,735548973083496
+	Política: 0,0166696873255661 ; Género: 0,1444 ; Colaborativo: 0,007553370055221892
+
+====================================================================================================
+
+ - N: 4 M: 2 L:2 Dataset: 2 exponente: 1 minmax: True
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:1,0075176298855208
+	Tiempo: 0,00838160514831543
+	Política: 0,35839409890551055 ; Género: 0,5 ; Colaborativo: 0,14912353098001035
+
+ - N: 6 M: 2 L:3 Dataset: 2 exponente: 1 minmax: True
+	Solución:(0, 1, 2, 5, 3, 4)
+	Valor Objetivo:1,888497262193699
+	Tiempo: 0,016002655029296875
+	Política: 0,6285348311397261 ; Género: 1,0 ; Colaborativo: 0,25996243105397293
+
+ - N: 6 M: 3 L:2 Dataset: 2 exponente: 1 minmax: True
+	Solución:(0, 1, 2, 3, 4, 5)
+	Valor Objetivo:1,523256294373513
+	Tiempo: 0,015985488891601562
+	Política: 0,3293766985894482 ; Género: 1,0 ; Colaborativo: 0,19387959578406483
+
+ - N: 8 M: 2 L:4 Dataset: 2 exponente: 1 minmax: True
+	Solución:(0, 1, 2, 7, 3, 5, 4, 6)
+	Valor Objetivo:3,2486349509078125
+	Tiempo: 0,33603501319885254
+	Política: 0,793155400093832 ; Género: 2,125 ; Colaborativo: 0,3304795508139808
+
+ - N: 8 M: 4 L:2 Dataset: 2 exponente: 1 minmax: True
+	Solución:(0, 1, 2, 7, 3, 4, 5, 6)
+	Valor Objetivo:1,522822002646381
+	Tiempo: 0,2411332130432129
+	Política: 0,29007575952276 ; Género: 1,0 ; Colaborativo: 0,23274624312362094
+
+ - N: 10 M: 2 L:5 Dataset: 2 exponente: 1 minmax: True
+	Solución:(0, 2, 1, 6, 3, 4, 5, 8, 7, 9)
+	Valor Objetivo:4,418128371369757
+	Tiempo: 36,12321972846985
+	Política: 1,1288157563218828 ; Género: 2,7 ; Colaborativo: 0,5893126150478736
+
+ - N: 10 M: 5 L:2 Dataset: 2 exponente: 1 minmax: True
+	Solución:(0, 1, 2, 7, 9, 3, 4, 5, 6, 8)
+	Valor Objetivo:1,566233226612432
+	Tiempo: 20,37174129486084
+	Política: 0,27635004238141014 ; Género: 1,0 ; Colaborativo: 0,2898831842310218
+
+====================================================================================================
+
+ - N: 4 M: 2 L:2 Dataset: 2 exponente: 2 minmax: True
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:0,2611607120145293
+	Tiempo: 0,007971525192260742
+	Política: 0,11169680384575945 ; Género: 0,125 ; Colaborativo: 0,02446390816876984
+
+ - N: 6 M: 2 L:3 Dataset: 2 exponente: 2 minmax: True
+	Solución:(0, 2, 1, 4, 3, 5)
+	Valor Objetivo:0,7210435266308919
+	Tiempo: 0,01598668098449707
+	Política: 0,1847412795644863 ; Género: 0,5 ; Colaborativo: 0,03630224706640559
+
+ - N: 6 M: 3 L:2 Dataset: 2 exponente: 2 minmax: True
+	Solución:(0, 1, 2, 3, 4, 5)
+	Valor Objetivo:0,6293131142623949
+	Tiempo: 0,012022733688354492
+	Política: 0,1031953183734402 ; Género: 0,5 ; Colaborativo: 0,02611779588895468
+
+ - N: 8 M: 2 L:4 Dataset: 2 exponente: 2 minmax: True
+	Solución:(0, 1, 2, 7, 3, 5, 4, 6)
+	Valor Objetivo:1,2107019623276947
+	Tiempo: 0,34799695014953613
+	Política: 0,21997238397974905 ; Género: 0,9375 ; Colaborativo: 0,05322957834794556
+
+ - N: 8 M: 4 L:2 Dataset: 2 exponente: 2 minmax: True
+	Solución:(0, 1, 2, 7, 3, 4, 5, 6)
+	Valor Objetivo:0,5149343606326953
+	Tiempo: 0,23599481582641602
+	Política: 0,07321535925233716 ; Género: 0,40625 ; Colaborativo: 0,035469001380358134
+
+ - N: 10 M: 2 L:5 Dataset: 2 exponente: 2 minmax: True
+	Solución:(0, 2, 3, 4, 1, 6, 5, 8, 7, 9)
+	Valor Objetivo:1,7544495874535833
+	Tiempo: 34,74582314491272
+	Política: 0,36079391098809366 ; Género: 1,3 ; Colaborativo: 0,0936556764654895
+
+ - N: 10 M: 5 L:2 Dataset: 2 exponente: 2 minmax: True
+	Solución:(0, 1, 2, 7, 9, 3, 4, 5, 6, 8)
+	Valor Objetivo:0,4875159409959134
+	Tiempo: 24,474006175994873
+	Política: 0,05829593196920612 ; Género: 0,38 ; Colaborativo: 0,049220009026707257
+
+====================================================================================================
+
+ - N: 4 M: 2 L:2 Dataset: 2 exponente: 3 minmax: True
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:0,07933782973976138
+	Tiempo: 0,003972530364990234
+	Política: 0,04265662356820715 ; Género: 0,03125 ; Colaborativo: 0,005431206171554225
+
+ - N: 6 M: 2 L:3 Dataset: 2 exponente: 3 minmax: True
+	Solución:(0, 2, 1, 4, 3, 5)
+	Valor Objetivo:0,32598732659113655
+	Tiempo: 0,012520790100097656
+	Política: 0,06928337218984103 ; Género: 0,25 ; Colaborativo: 0,006703954401295526
+
+ - N: 6 M: 3 L:2 Dataset: 2 exponente: 3 minmax: True
+	Solución:(0, 1, 2, 3, 4, 5)
+	Valor Objetivo:0,29413719833868335
+	Tiempo: 0,012025594711303711
+	Política: 0,039720460059803224 ; Género: 0,25 ; Colaborativo: 0,004416738278880114
+
+ - N: 8 M: 2 L:4 Dataset: 2 exponente: 3 minmax: True
+	Solución:(0, 2, 1, 7, 3, 5, 4, 6)
+	Valor Objetivo:0,5430226378114332
+	Tiempo: 0,3605787754058838
+	Política: 0,07460197465879426 ; Género: 0,455078125 ; Colaborativo: 0,013342538152638996
+
+ - N: 8 M: 4 L:2 Dataset: 2 exponente: 3 minmax: True
+	Solución:(0, 1, 2, 7, 3, 4, 5, 6)
+	Valor Objetivo:0,2092287415046532
+	Tiempo: 0,2759983539581299
+	Política: 0,02309611620697954 ; Género: 0,1796875 ; Colaborativo: 0,006445125297673654
+
+ - N: 10 M: 2 L:5 Dataset: 2 exponente: 3 minmax: True
+	Solución:(1, 6, 3, 4, 5, 8, 7, 9, 0, 2)
+	Valor Objetivo:0,8867908962831715
+	Tiempo: 35,70796060562134
+	Política: 0,13149388319289546 ; Género: 0,7380000000000001 ; Colaborativo: 0,01729701309027596
+
+ - N: 10 M: 5 L:2 Dataset: 2 exponente: 3 minmax: True
+	Solución:(0, 1, 2, 7, 9, 3, 4, 5, 6, 8)
+	Valor Objetivo:0,18410683262088423
+	Tiempo: 20,6544029712677
+	Política: 0,014777369762190925 ; Género: 0,16 ; Colaborativo: 0,009329462858693285
+
+====================================================================================================
+
+ - N: 4 M: 2 L:2 Dataset: 2 exponente: 4 minmax: True
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:0,02777471907278392
+	Tiempo: 0,004003763198852539
+	Política: 0,018613147234261402 ; Género: 0,0078125 ; Colaborativo: 0,0013490718385225178
+
+ - N: 6 M: 2 L:3 Dataset: 2 exponente: 4 minmax: True
+	Solución:(0, 2, 1, 4, 3, 5)
+	Valor Objetivo:0,15520264886227406
+	Tiempo: 0,016016483306884766
+	Política: 0,028706494918708407 ; Género: 0,125 ; Colaborativo: 0,0014961539435656408
+
+ - N: 6 M: 3 L:2 Dataset: 2 exponente: 4 minmax: True
+	Solución:(0, 1, 2, 3, 4, 5)
+	Valor Objetivo:0,14265204989607622
+	Tiempo: 0,011996269226074219
+	Política: 0,016785898174409494 ; Género: 0,125 ; Colaborativo: 0,0008661517216667167
+
+ - N: 8 M: 2 L:4 Dataset: 2 exponente: 4 minmax: True
+	Solución:(0, 2, 1, 7, 3, 5, 4, 6)
+	Valor Objetivo:0,26434348845027317
+	Tiempo: 0,34403133392333984
+	Política: 0,029223470985903287 ; Género: 0,2314453125 ; Colaborativo: 0,0036747049643698956
+
+ - N: 8 M: 4 L:2 Dataset: 2 exponente: 4 minmax: True
+	Solución:(0, 1, 2, 7, 3, 4, 5, 6)
+	Valor Objetivo:0,09176139051359361
+	Tiempo: 0,2559692859649658
+	Política: 0,007951795299372734 ; Género: 0,08251953125 ; Colaborativo: 0,001290063964220876
+
+ - N: 10 M: 2 L:5 Dataset: 2 exponente: 4 minmax: True
+	Solución:(0, 2, 1, 6, 7, 9, 3, 4, 5, 8)
+	Valor Objetivo:0,5221056713255406
+	Tiempo: 35,49060034751892
+	Política: 0,05258082056291906 ; Género: 0,466 ; Colaborativo: 0,0035248507626215
+
+ - N: 10 M: 5 L:2 Dataset: 2 exponente: 4 minmax: True
+	Solución:(0, 1, 2, 7, 9, 3, 4, 5, 6, 8)
+	Valor Objetivo:0,078255764345197
+	Tiempo: 20,35202717781067
+	Política: 0,004167421831391525 ; Género: 0,0722 ; Colaborativo: 0,001888342513805473

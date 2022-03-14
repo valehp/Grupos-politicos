@@ -78,13 +78,15 @@ def run3():
 
 def run4():
 	tipo_greedy = ["normal", "random", "iterativo"]
-	command = "python main_greedy.py -n 1000 -l 50 -m 20 -b 10 --g -d 4 "
+	dataset = [2]
+	command = "python main_greedy.py -n 1000 -l 50 -m 20 -b 10 --g --cambio "
 
 
 	for greedy in tipo_greedy:
-		aux = "{} -tipog {}".format(command, greedy)
-		print(aux)
-		os.system(aux)
+		for d in dataset:
+			aux = "{} -tipog {} -d {}".format(command, greedy, d)
+			print(aux)
+			os.system(aux)
 
 
 

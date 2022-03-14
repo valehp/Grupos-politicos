@@ -1,0 +1,134 @@
+
+ - N: 4 M: 2 L:2 Dataset: 1
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:2.33998779569204
+	Tiempo: 0.0039980411529541016
+
+ - N: 6 M: 2 L:3 Dataset: 1
+	Solución:(0, 5, 1, 4, 2, 3)
+	Valor Objetivo:2.912612286454681
+	Tiempo: 0.011982917785644531
+
+ - N: 6 M: 3 L:2 Dataset: 1
+	Solución:(0, 2, 3, 1, 4, 5)
+	Valor Objetivo:1.7812046125853267
+	Tiempo: 0.01198434829711914
+
+ - N: 8 M: 2 L:4 Dataset: 1
+	Solución:(0, 4, 1, 6, 2, 5, 3, 7)
+	Valor Objetivo:3.131863024943053
+	Tiempo: 0.3675074577331543
+
+ - N: 8 M: 4 L:2 Dataset: 1
+	Solución:(0, 2, 5, 7, 1, 3, 4, 6)
+	Valor Objetivo:1.375203979652422
+	Tiempo: 0.2716085910797119
+
+ - N: 10 M: 2 L:5 Dataset: 1
+	Solución:(1, 6, 3, 4, 2, 5, 7, 9, 0, 8)
+	Valor Objetivo:3.6117696565136512
+	Tiempo: 47.07532072067261
+
+ - N: 10 M: 5 L:2 Dataset: 1
+	Solución:(0, 2, 3, 7, 9, 1, 4, 5, 6, 8)
+	Valor Objetivo:1.3048594173216719
+	Tiempo: 25.85929036140442
+
+ - N: 12 M: 4 L:3 Dataset: 1
+	Solución:(0, 5, 8, 10, 1, 4, 6, 11, 2, 3, 7, 9)
+	Valor Objetivo:2.050341712300935
+	Tiempo: 4331.643419981003
+
+
+===========================================================
+MINMAX SCALE
+
+ - N: 4 M: 2 L:2 Dataset: 1
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:0.8349969489230099
+	Tiempo: 0.006032228469848633
+	Política: 0.2375694656610759 ; Género: 0.5 ; Colaborativo: 0.09742748326193407
+
+ - N: 6 M: 2 L:3 Dataset: 1
+	Solución:(0, 5, 1, 4, 2, 3)
+	Valor Objetivo:1.0614864049470036
+	Tiempo: 0.015944242477416992
+	Política: 0.26520620668196426 ; Género: 0.6666666666666666 ; Colaborativo: 0.12961353159837272
+
+ - N: 6 M: 3 L:2 Dataset: 1
+	Solución:(0, 2, 3, 1, 4, 5)
+	Valor Objetivo:0.6119678198129983
+	Tiempo: 0.015924930572509766
+	Política: 0.15339554838517205 ; Género: 0.3333333333333333 ; Colaborativo: 0.12523893809449294
+
+ - N: 8 M: 2 L:4 Dataset: 1
+	Solución:(0, 4, 1, 6, 2, 5, 3, 7)
+	Valor Objetivo:1.1579657562357633
+	Tiempo: 0.4138796329498291
+	Política: 0.2931673801905498 ; Género: 0.75 ; Colaborativo: 0.11479837604521351
+
+ - N: 8 M: 4 L:2 Dataset: 1
+	Solución:(0, 2, 5, 7, 1, 3, 4, 6)
+	Valor Objetivo:0.4688009949131055
+	Tiempo: 0.2749319076538086
+	Política: 0.08859167017015569 ; Género: 0.25 ; Colaborativo: 0.13020932474294983
+
+ - N: 10 M: 2 L:5 Dataset: 1
+	Solución:(1, 6, 3, 4, 2, 5, 7, 9, 0, 8)
+	Valor Objetivo:1.3029424141284127
+	Tiempo: 44.541701316833496
+	Política: 0.30999167122803684 ; Género: 0.7999999999999999 ; Colaborativo: 0.19295074290037612
+
+ - N: 10 M: 5 L:2 Dataset: 1
+	Solución:(0, 2, 3, 7, 9, 1, 4, 5, 6, 8)
+	Valor Objetivo:0.42621485433041795
+	Tiempo: 25.01570773124695
+	Política: 0.090989468643918 ; Género: 0.19999999999999998 ; Colaborativo: 0.13522538568649994
+
+ - N: 12 M: 6 L:2 Dataset: 1
+	Solución:(0, 1, 4, 6, 8, 11, 2, 3, 5, 7, 9, 10)
+	Valor Objetivo:0.41072805314519356
+	Tiempo: 3944.0959210395813
+	Política: 0.08903534918906766 ; Género: 0.16666666666666663 ; Colaborativo: 0.1550260372894593
+
+ - N: 4 M: 2 L:2 Dataset: 1
+	Solución:(0, 2, 1, 3)
+	Valor Objetivo:0.8349969489230099
+	Tiempo: 0.003960371017456055
+	Política: 0.2375694656610759 ; Género: 0.5 ; Colaborativo: 0.09742748326193407
+
+ - N: 6 M: 2 L:3 Dataset: 1
+	Solución:(0, 5, 1, 4, 2, 3)
+	Valor Objetivo:1.0614864049470036
+	Tiempo: 0.012960672378540039
+	Política: 0.26520620668196426 ; Género: 0.6666666666666666 ; Colaborativo: 0.12961353159837272
+
+ - N: 6 M: 3 L:2 Dataset: 1
+	Solución:(0, 2, 3, 1, 4, 5)
+	Valor Objetivo:0.6119678198129983
+	Tiempo: 0.028919458389282227
+	Política: 0.15339554838517205 ; Género: 0.3333333333333333 ; Colaborativo: 0.12523893809449294
+
+ - N: 8 M: 2 L:4 Dataset: 1
+	Solución:(0, 4, 1, 6, 2, 5, 3, 7)
+	Valor Objetivo:1.1579657562357633
+	Tiempo: 0.5720400810241699
+	Política: 0.2931673801905498 ; Género: 0.75 ; Colaborativo: 0.11479837604521351
+
+ - N: 8 M: 4 L:2 Dataset: 1
+	Solución:(0, 2, 5, 7, 1, 3, 4, 6)
+	Valor Objetivo:0.4688009949131055
+	Tiempo: 0.3747584819793701
+	Política: 0.08859167017015569 ; Género: 0.25 ; Colaborativo: 0.13020932474294983
+
+ - N: 10 M: 2 L:5 Dataset: 1
+	Solución:(1, 6, 3, 4, 2, 5, 7, 9, 0, 8)
+	Valor Objetivo:1.3029424141284127
+	Tiempo: 57.397451400756836
+	Política: 0.30999167122803684 ; Género: 0.7999999999999999 ; Colaborativo: 0.19295074290037612
+
+
+
+=============================================================
+
+
