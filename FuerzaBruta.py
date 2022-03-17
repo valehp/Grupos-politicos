@@ -255,6 +255,7 @@ if __name__ == "__main__":
     x = []
 
     """
+    x = []
     i = 0
     for j in sizes:
         aux = solucion[i:i+j]

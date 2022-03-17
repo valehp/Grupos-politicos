@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import scipy.stats as ss
 import pandas as pd
 import random
-from sklearn.preprocessing import MinMaxScaler
 import argparse
 
 base = "./dataset/"
