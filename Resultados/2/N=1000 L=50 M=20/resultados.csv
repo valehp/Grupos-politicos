@@ -1,7 +1,0 @@
-,Tipo greedy,Cambio promedio,Valor objetivo,Tiempo,Promedio Economía (P),Promedio Diplomacia (P),Promedio Estado (P),Promedio Sociedad (P),Promedio Género,Promedio Economía (IDL),Promedio Diplomacia (IDL),Promedio Estado (IDL),Promedio Sociedad (IDL)
-0,iterativo,0,97.44501690394154,190.7609338760376,0,0,0,0,0,0,0,0,0
-1,random,0,99.89126039521804,216.813512802124,0,0,0,0,0,0,0,0,0
-2,normal,0,99.69616850176588,10.242105484008787,0,0,0,0,0,0,0,0,0
-3,normal,-1,119.74895054912014,14.125579357147217,0,0,0,0,0,0,0,0,0
-4,random,-1,118.5676377912601,336.7017755508423,0,0,0,0,0,0,0,0,0
-5,iterativo,-1,118.31762016710086,303.797682762146,0,0,0,0,0,0,0,0,0
