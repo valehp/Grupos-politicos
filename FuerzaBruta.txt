@@ -350,3 +350,27 @@
 	Politica: 0.00241117590813051 ; Genero: 0.00019999999999999993 ; Colaborativo: 0.0011770880964134206
 
 ====================================================================================================
+
+ - N: 12 M: 3 L: 4 Dataset: 2 exponente: 1 minmax: True
+	Solucion:(0. 4. 9. 1. 8. 11. 2. 3. 7. 5. 6. 10)
+	Valor Objetivo:1.5308312523088934
+	Tiempo: 7309.653772354126
+	Polotica: 0.5013628965667645 ; Gonero: 0.6666666666666666 ; Colaborativo: 0.3628016890754623
+
+ - N: 12 M: 4 L: 3 Dataset: 2 exponente: 1 minmax: True
+	Solucion:(0. 4. 9. 11. 1. 2. 3. 8. 5. 6. 7. 10)
+	Valor Objetivo:0.9831059354760385
+	Tiempo: 4999.888510465622
+	Polotica: 0.34619646964159606 ; Gonero: 0.3333333333333333 ; Colaborativo: 0.3035761325011092
+
+ - N: 12 M: 4 L: 3 Dataset: 2 exponente: 2 minmax: True
+	Solucion:(0. 4. 9. 11. 1. 2. 3. 8. 5. 6. 7. 10)
+	Valor Objetivo:0.15508680818302917
+	Tiempo: 4326.828593969345
+	Polotica: 0.07534679957766725 ; Gonero: 0.04166666666666667 ; Colaborativo: 0.038073341938695236
+
+ - N: 12 M: 3 L: 4 Dataset: 2 exponente: 2 minmax: True
+	Solucion:(0. 4. 5. 1. 9. 11. 2. 3. 8. 6. 7. 10)
+	Valor Objetivo:0.25850889634858587
+	Tiempo: 8066.0219559669495
+	Polotica: 0.10354255744049164 ; Gonero: 0.11111111111111109 ; Colaborativo: 0.04385522779698314
