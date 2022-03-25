@@ -6,7 +6,7 @@ import random
 
 
 class BaseGreedy:
-	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, alpha=1, ejes_alpha=4, beta=1, ejes_beta=1, gamma=1, ejes_gamma=4, generos=[0, 0.5, 1]):
+	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, alpha=1, ejes_alpha=4, beta=1, ejes_beta=1, gamma=1, ejes_gamma=4, generos=[0, 0.5, 1],exponente=1):
 		self.data = data 										# Datos de las personas (4 numeros reales por persona)
 		self.M = M 												# Cantidad máxima de personas por grupo
 		self.L = L 												# Número de grupos
@@ -16,6 +16,7 @@ class BaseGreedy:
 		self.sizes = self.GroupSizes(M, L, len(data))			# Tamaño que le corresponde a cada grupo
 		self.X = np.zeros( (len(data), L), dtype=bool )			# Variable X (matriz) donde se guardará la pertenencia del dato i al grupo j
 		self.generos = generos
+		self.exp = exponente
 
 		self.grupos = [ [] for i in range(L) ] 					# Aquí se guardan los grupos
 		self.listos = np.array([ False for i in range(L) ]) 	# Lista de bools que indica si los grupos están cerrados (completos) o no
@@ -27,7 +28,7 @@ class BaseGreedy:
 		self.ejes_alpha = ejes_alpha
 		self.ejes_beta  = ejes_beta
 		self.ejes_gamma = ejes_gamma 
-		self.Objetivo = None
+		self.Objetivo, self.dimensiones = None, None
 		self.Objetivo_ejes = [ 0 for i in range(self.ejes) ]
 		self.MejorMetrica  = ""
 
@@ -47,7 +48,7 @@ class BaseGreedy:
 			grupo = np.array(self.grupos[j])
 			for i in range(self.ejes_alpha):
 				promedios = np.mean( grupo[:,i] )
-				dif = abs( self.ObjGenerales[i] - promedios )
+				dif = abs( self.ObjGenerales[i] - promedios ) ** self.exp
 				P += np.sum(dif)
 		print("Componente política: ", P)
 
@@ -61,7 +62,7 @@ class BaseGreedy:
 			m  = 0 if ((grupo==1).sum() == 0 ) else (grupo==1).sum()/len(grupo)
 			#f, nb, m = (grupo==0).sum()/len(grupo), (grupo==0.5).sum()/len(grupo), (grupo==1).sum()/len(grupo)
 			generos = np.array([f, nb, m])
-			dif = abs( self.ObjGenerales[self.ejes_alpha] - generos )
+			dif = abs( self.ObjGenerales[self.ejes_alpha] - generos ) ** self.exp
 			print( "Grupo {}: {} || obj: {} \t dif: {} = {}".format(j, generos, self.ObjGenerales[self.ejes_alpha], dif, sum(dif)) )
 			G += np.sum(dif)
 		print("Componente género: ", G)
@@ -72,12 +73,12 @@ class BaseGreedy:
 		for j in range(self.L):
 			grupo = np.array(self.grupos[j])
 			for i in range(self.ejes_alpha+self.ejes_beta, self.ejes_alpha+self.ejes_beta+self.ejes_gamma, 1):
-				std = np.std( grupo[:,i] )
+				std = np.std( grupo[:,i] ) ** self.exp
 				C += np.sum(std)
 		print("Componente colab: ", C )
 
 		self.Objetivo = self.alpha * P + self.beta * G + self.gamma * C
-		return self.Objetivo
+		return self.Objetivo, (P, G, C)
 
 
 
@@ -241,8 +242,8 @@ class PromedioGreedy(BaseGreedy):
 	def Usar(self):
 		self.CalcularObjetivo = self.PromedioEjes
 		BaseGreedy.Greedy(self)
-		self.Objetivo = self.FuncionObjetivo()
-		return self.grupos, self.X	
+		self.Objetivo, dims = self.FuncionObjetivo()
+		return self.grupos, self.X, self.Objetivo, dims
 
 
 
@@ -313,7 +314,7 @@ class GreedyKurtosis(BaseGreedy):
 			if not i_listo:
 				self.UpdateGroup( indice_grupal, i, menor_k )
 
-		self.Objetivo = self.FuncionObjetivo()
+		self.Objetivo, self.dimensiones = self.FuncionObjetivo()
 
 		return self.grupos, self.X
 
@@ -385,9 +386,9 @@ class RandomGreedy(PromedioGreedy):
 				self.UpdateGroup( nuevo_grupo[1], i, nuevo_grupo[0] )
 			else: self.UpdateGroup( indice_grupal, i, mejor_obj )
 
-		self.Objetivo = self.FuncionObjetivo()
+		self.Objetivo, self.dimensiones = self.FuncionObjetivo()
 
-		return self.grupos, self.X
+		return self.grupos, self.X, self.Objetivo, self.dimensiones
 
 
 
@@ -413,11 +414,12 @@ class IteratedRandomGreedy (RandomGreedy):
 		self.obj_grupales = [ np.array([]) for i in range(self.L) ]
 
 
-	def ActualizarMetrica(self, actual, grupos, X):
+	def ActualizarMetrica(self, actual, grupos, X, dims):
 		if actual < self.MejorMetrica:
 			self.MejorMetrica  = actual
 			self.MejoresGrupos = grupos
 			self.MejorSolucion = X
+			self.dimensiones   = dims
 			return True
 		return False
 
@@ -428,15 +430,15 @@ class IteratedRandomGreedy (RandomGreedy):
 		for it in range(self.it):
 			print("Iteracion \t", it)
 			self.reset()
-			grupos, X = RandomGreedy.Usar(self)
-			metrica   = self.FuncionObjetivo()
-			if self.ActualizarMetrica( metrica, grupos, X ): aux_obj_grupales = self.obj_grupales
+			grupos, X, _, _ = RandomGreedy.Usar(self)
+			metrica, dims_metrica   = self.FuncionObjetivo()
+			if self.ActualizarMetrica( metrica, grupos, X, dims_metrica ): aux_obj_grupales = self.obj_grupales
 
 
 		self.obj_grupales = aux_obj_grupales
 		self.Objetivo = self.MejorMetrica
 
-		return self.MejoresGrupos, self.MejorSolucion
+		return self.MejoresGrupos, self.MejorSolucion, self.Objetivo, self.dimensiones
 
 
 
@@ -479,12 +481,13 @@ class IteratedDestructiveGreedy (RandomGreedy):
 		return contador
 
 
-	def ActualizarMetrica(self, actual, grupos, X):
+	def ActualizarMetrica(self, actual, grupos, X, dims):
 		if actual < self.MejorMetrica:
 			print("METRICA ACTUALIZADA -> ", actual)
 			self.MejorMetrica  = actual
 			self.MejoresGrupos = grupos
 			self.MejorSolucion = X
+			self.dimensiones   = dims
 			return True
 		return False
 
@@ -495,17 +498,17 @@ class IteratedDestructiveGreedy (RandomGreedy):
 		for it in range(self.it):
 			print("Iteracion \t", it)
 			self.reset()
-			grupos, X = RandomGreedy.Usar(self)
-			metrica   = self.FuncionObjetivo()
-			if self.ActualizarMetrica( metrica, grupos, X ): aux_obj_grupales = self.obj_grupales
+			grupos, X, _, _ = RandomGreedy.Usar(self)
+			metrica, dims= self.FuncionObjetivo()
+			if self.ActualizarMetrica( metrica, grupos, X, dims ): aux_obj_grupales = self.obj_grupales
 
 			personas = self.DestruirGrupos()
-			grupos, X = RandomGreedy.Usar(self, self.data[ len(self.data)-personas-1: ])
-			if self.ActualizarMetrica( metrica, grupos, X ): aux_obj_grupales = self.obj_grupales
+			grupos, X, obj, dims = RandomGreedy.Usar(self, self.data[ len(self.data)-personas-1: ])
+			if self.ActualizarMetrica( obj, grupos, X, dims ): aux_obj_grupales = self.obj_grupales
 
 
 
 		self.obj_grupales = aux_obj_grupales
 		self.Objetivo = self.MejorMetrica
 
-		return self.MejoresGrupos, self.MejorSolucion
+		return self.MejoresGrupos, self.MejorSolucion, self.Objetivo, self.dimensiones

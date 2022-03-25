@@ -15,7 +15,7 @@ TITLES= ['Economía (P)', 'Diplomacia (P)', 'Estado (P)', 'Sociedad (P)', 'Géne
 
 
 def graficar_greedy(args):
-	N, M, L = args.num_personas, args.max_personas, args.num_grupos
+	N, M, L, E = args.num_personas, args.max_personas, args.num_grupos, args.exp
 
 	out = "./Resultados/{}/".format(args.dataset)
 	params = "N={} L={} M={}".format(N, L, M)
@@ -65,7 +65,7 @@ def graficar_greedy(args):
 
 
 	start = time.time()
-	sol, x = g.Usar()
+	sol, x, objetivo, dimensiones = g.Usar()
 	end = time.time()
 
 
@@ -75,30 +75,19 @@ def graficar_greedy(args):
 	- Valor objetivo obtenido
 	- Promedio por eje
 	"""
+	with open("Greedy.txt", "a") as file:
+		file.write( "\n - N: {} M: {} L: {} Dataset: {} exponente: {} minmax: {}\n\tSolución:{}\n\tValor Objetivo:{}\n\tTiempo: {}\n\tPolítica: {} ; Género: {} ; Colaborativo: {}\n".format(N, M, L, args.dataset, args.exp, False, sol, objetivo, end-start, dimensiones[0], dimensiones[1], dimensiones[2]) )
+
 
 	print("Tiempo : ", end-start)
 
-	#print("Promedios: ", g.ObjGenerales)
-
-	""" pendiente arreglar
-	mejor, peor = g.Mejor_Peor( out+"promedios.txt" )
-	with open(out+"resultados.txt", "a") as f:
-		f.write( "Greedy {} : {} | cambio: {}\n\n".format(args.tipo_greedy, g.FuncionObjetivo(), args.objetivo_cambio) )
-	"""
-
 	print("Valor objetivo: ", g.Objetivo)
-	# diferencia, indice
-	#print( "MEJOR -> Grupo {} \n\t {} -> dif: {} \t valor: {} \n".format(mejor[1], g.obj_grupales[mejor[1]-1] , mejor[0], g.FuncionObjetivo()) )
-	#print( "PEOR  -> Grupo {} \n\t {} -> dif: {} \t valor: {} \n".format(peor[1], g.obj_grupales[peor[1]-1] , peor[0], g.FuncionObjetivo()) )
-
 	# Guardar resultados
 	df = pd.DataFrame()
 	df["Tipo greedy"] 		= [args.tipo_greedy]
 	df["Cambio promedio"] 	= [cambiop]
 	df["Valor objetivo"] 	= [g.Objetivo]
 	df["Tiempo"] 			= [end - start]
-	for i in range(len(TITLES)):
-		df["Promedio "+TITLES[i]] = [g.Objetivo_ejes[i]]
 
 	resultados = "resultados.csv"
 	if resultados not in os.listdir(out):
@@ -109,6 +98,30 @@ def graficar_greedy(args):
 		new_df.to_csv( out + resultados )
 
 
+	df = pd.DataFrame()
+	df["Tipo greedy"] 		= [args.tipo_greedy]
+	df["Cambio promedio"] 	= [cambiop]
+	df["N"] = [N]
+	df["M"] = [M]
+	df["L"] = [L]
+	df["Dataset"] = [args.dataset]
+	df["MinMax"] = [False]
+	df["Exp"] = [args.exp]
+
+	df["Politica"] = [dimensiones[0]]
+	df["Genero"] = [dimensiones[1]]
+	df["Colaborativo"] = [dimensiones[2]]
+
+	df["Valor objetivo"] = [g.Objetivo]
+	df["Tiempo"] 		 = [end - start]
+	df["Solucion"] 		 = [sol]
+
+	if "ResultadosGreedy.csv" not in os.listdir("./"):
+		df.to_csv( "ResultadosGreedy.csv" )
+	else:
+		new_df = pd.read_csv( "ResultadosGreedy.csv", index_col=0 )
+		new_df = new_df.append( df, ignore_index=True )
+		new_df.to_csv( "ResultadosGreedy.csv" )
 
 
 	if args.grafico:
@@ -146,45 +159,6 @@ def graficar_greedy(args):
 		plt.close(f)
 				#plt.show()
 
-
-		# --- Graficar cada uno de los grup
-		# Graficar mejor grupo
-		# PENDIENTE
-		"""
-		mejor_grupo = sol[ mejor[1] ]
-		f, axs = plt.subplots( 3, 3, figsize=size_grafico )
-		e = 0 
-		for i in range(3):
-			for j in range(3):
-				axs[i][j].hist(np.array(mejor_grupo)[:,e], bins=BINS[e], color=colors[e])
-				axs[i][j].set_title(TITLES[e], size=20)
-				if EJES[e] == 'genero':
-					axs[i][j].set_xticks([0.2, 0.5, 0.8])
-					axs[i][j].set_xticklabels(["F", "M", "NB"])
-				e +=1 
-		f.tight_layout()
-		f.savefig( "{}Mejor {} {}".format(out, args.tipo_greedy, cambiop) )
-		plt.close(f)
-
-
-
-		# Graficar peor grupo
-		peor_grupo = sol[ peor[1] ]
-		f, axs = plt.subplots( 3, 3, figsize=size_grafico )
-		e = 0 
-		for i in range(3):
-			for j in range(3):
-				axs[i][j].hist(np.array(peor_grupo)[:,e], bins=BINS[e], color=colors[e])
-				axs[i][j].set_title(TITLES[e], size=20)
-				if EJES[e] == 'genero':
-					axs[i][j].set_xticks([0.2, 0.5, 0.8])
-					axs[i][j].set_xticklabels(["F", "M", "NB"])
-				e +=1 
-		f.tight_layout()
-		f.savefig( "{}Peor {} {}".format(out, args.tipo_greedy, cambiop) )
-		plt.close(f)
-
-		"""
 
 			# --- Graficar promedios por grupos --- #
 		print("Graficando promedios...")
@@ -226,40 +200,9 @@ def graficar_greedy(args):
 				axs[i][j].set_title(TITLES[e], size=20)
 				e +=1 
 		f.tight_layout()
-		plt.savefig( "{}Promedios {} {}".format(out, args.tipo_greedy, cambiop) )
+		plt.savefig( "{}Promedios exp{} {} {}".format(out, args.exp, args.tipo_greedy, cambiop) )
 		
 
-		"""
-
-				axs[i][j].hist(np.array(mejor_grupo)[:,e], bins=BINS[e])
-				axs[i][j].set_title(TITLES[e], size=20)
-				if EJES[e] == 'genero':
-					axs[i][j].set_xticks([0.2, 0.5, 0.8])
-					axs[i][j].set_xticklabels(["F", "M", "NB"])
-				e +=1 
-		f.tight_layout()
-		f.savefig( "{}Mejor {} {}".format(out, args.tipo_greedy, cambiop) )
-		plt.close(f)
-
-		f, ax = plt.subplots( 2, 3, figsize=(20, 10))
-
-		x = [ i+1 for i in range(L) ]
-		i, j = 0, 0
-		for e in range(len(EJES)):
-			y = []
-			for l in range(L):
-				grupo = np.array(sol[l])
-				y.append( np.mean(grupo[:,e]) )
-			ax[j][i].bar( x, y, color=colors[e] )
-			ax[j][i].axhline( y=g.ObjGenerales[e], ls='--', color="black", lw=3.5, label="Promedio general" )
-			ax[j][i].legend()
-			ax[j][i].set_title(TITLES[e], size=20)
-			i += 1
-			if i == 3: i, j = 0, 1
-		f.tight_layout()
-		plt.savefig( "{}Promedios {} {}".format(out, args.tipo_greedy, cambiop) )
-		"""
-		print("Terminado")
 
 
 
@@ -297,6 +240,7 @@ if __name__ == "__main__":
 	parser.add_argument('-m', '--max_personas', type=int, default=2)
 	parser.add_argument('-d', '--dataset', type=int, default=1, choices=[1, 2, 3])
 	parser.add_argument('-b', '--bins', type=int, default=4)
+	parser.add_argument('-e', '--exp', type=int, default=1)
 	args = parser.parse_args()
 	print("\n\n", "="*100, "\n",args)
 
