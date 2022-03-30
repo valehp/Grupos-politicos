@@ -10,8 +10,8 @@ import os
 from Metricas import *
 
 def calc_scores(score, max):
-    aux = 100 * (max+score) / (2*max)
-    return round(aux, 1)
+    aux =  (max+score) / (2*max)
+    return round(aux, 3)
 
 
 EJES = ["economia", "diplomacia", "estado", "sociedad"]
@@ -55,14 +55,33 @@ for i in range(70):
 - EJE DIPLOMACIA:   peace       ----    might
 - EJE ESTADO:       liberty     ----    authority
 - EJE SOCIEDAD:     progress    ----    tradition
+
+ORDEN
+- EJE ECONÓMICO:    igualdad    ----    mercado
+- EJE DIPLOMACIA:   nacion      ----    global / peace
+- EJE ESTADO:       libertad    ----    autoridad
+- EJE SOCIEDAD:     tradicion   ----    progreso
+
+
 """
 
-equality =  calc_scores( suma_efectos["economia"], max_scores["economia"] )
-peace =     calc_scores( suma_efectos["diplomacia"], max_scores["diplomacia"] )
-liberty =   calc_scores( suma_efectos["estado"], max_scores["estado"] )
-progress =  calc_scores( suma_efectos["sociedad"], max_scores["sociedad"] )
+# Eje económico : igualdad < - > mercado
+igualdad =  calc_scores( suma_efectos["economia"], max_scores["economia"] )
+mercado  =  round(1 - igualdad, 3)
 
-print("ECONOMÍA: \t {} \t ---- {}".format(equality, 100 - equality) )
-print("DIPLOMACIA: \t {} \t ---- {}".format(peace, 100 - peace) )
-print("ESTADO: \t {} \t ---- {}".format(liberty, 100 - liberty) )
-print("SOCIEDAD: \t {} \t ---- {}".format(progress, 100 - progress) )
+# Eje dipomacia : nacion < - > global
+peace  = calc_scores( suma_efectos["diplomacia"], max_scores["diplomacia"] )
+nacion = round(1 - peace, 3)
+
+# Eje estado : libertad < - > autoridad
+libertad = calc_scores( suma_efectos["estado"], max_scores["estado"] )
+autoridad= round(1 - libertad, 3)
+
+# Eje sociedad : tradicion < - > progreso
+progreso = calc_scores( suma_efectos["sociedad"], max_scores["sociedad"] )
+tradicion= round(1 - progreso, 3)
+
+print("ECONOMÍA: \t {} \t ---- \t {}".format(igualdad, mercado) )
+print("DIPLOMACIA: \t {} \t ---- \t {}".format(nacion, peace) )
+print("ESTADO: \t {} \t ---- \t {}".format(libertad, autoridad) )
+print("SOCIEDAD: \t {} \t ---- \t {}".format(tradicion, progreso) )
