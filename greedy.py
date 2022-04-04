@@ -1,3 +1,4 @@
+from hashlib import new
 import numpy as np
 import scipy.stats as ss
 from itertools import compress 
@@ -6,7 +7,7 @@ import random
 
 
 class BaseGreedy:
-	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, alpha=1, ejes_alpha=4, beta=1, ejes_beta=1, gamma=1, ejes_gamma=4, generos=[0, 0.5, 1],exponente=1):
+	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.025, alpha=1, ejes_alpha=4, beta=1, ejes_beta=1, gamma=1, ejes_gamma=4, generos=[0, 0.5, 1],exponente=1, minmax=True):
 		self.data = data 										# Datos de las personas (4 numeros reales por persona)
 		self.M = M 												# Cantidad máxima de personas por grupo
 		self.L = L 												# Número de grupos
@@ -17,6 +18,7 @@ class BaseGreedy:
 		self.X = np.zeros( (len(data), L), dtype=bool )			# Variable X (matriz) donde se guardará la pertenencia del dato i al grupo j
 		self.generos = generos
 		self.exp = exponente
+		self.mm = minmax
 
 		self.grupos = [ [] for i in range(L) ] 					# Aquí se guardan los grupos
 		self.listos = np.array([ False for i in range(L) ]) 	# Lista de bools que indica si los grupos están cerrados (completos) o no
@@ -31,6 +33,10 @@ class BaseGreedy:
 		self.Objetivo, self.dimensiones = None, None
 		self.Objetivo_ejes = [ 0 for i in range(self.ejes) ]
 		self.MejorMetrica  = ""
+
+		self.min_p, self.max_p = 0, 4
+		self.min_g, self.max_g = 0, 2
+		self.min_c, self.max_c = 0, 4
 
 
 	def reset(self):
@@ -77,6 +83,11 @@ class BaseGreedy:
 				C += np.sum(std)
 		print("Componente colab: ", C )
 
+		if self.mm:
+			P = (P - self.min_p) / (self.max_p - self.min_p)
+			G = (G - self.min_g) / (self.max_g - self.min_g)
+			C = (C - self.min_c) / (self.max_c - self.min_c)
+
 		self.Objetivo = self.alpha * P + self.beta * G + self.gamma * C
 		return self.Objetivo, (P, G, C)
 
@@ -104,7 +115,10 @@ class BaseGreedy:
 		return False
 
 
-	def UpdateGroup(self, index_grupo, index_data, new_obj):
+	def UpdateGroup(self, index_grupo, index_data, new_obj=-1, p=0, g=0, c=0):
+		if type(new_obj) == int:
+			new_obj = np.append( p, g )
+			new_obj = np.append( new_obj, c )
 		#print("\nUPDATE!!")
 		if len(self.grupos[index_grupo]) == 0: self.grupos[index_grupo] = [ self.data[index_data].tolist().copy() ]
 		else: 
@@ -126,49 +140,108 @@ class BaseGreedy:
 			return True
 		return False
 
+
+	def diff(self, grupo):		
+		# calcula que tanto se acerca el GRUPO al objetivo
+		dif_p = np.zeros(self.ejes_alpha)
+		dif_g = np.zeros(len(self.generos))
+		dif_c = np.zeros(self.ejes_gamma)
+
+		# Componente política
+		for i in range(self.ejes_alpha):
+			if len(grupo.shape) != 2: promedio = grupo[i]
+			else: promedio = np.mean( grupo[:,i] )
+			dif_p[i] = abs( promedio - self.ObjGenerales[i] ) ** self.exp
+		
+		# Componente de Género
+		G = 0
+		f  = 0 if ((grupo[:,self.ejes_alpha]==0).sum() == 0 ) else (grupo==0).sum()/len(grupo)
+		nb = 0 if ((grupo[:,self.ejes_alpha]==0.5).sum() == 0 ) else (grupo==0.5).sum()/len(grupo)
+		m  = 0 if ((grupo[:,self.ejes_alpha]==1).sum() == 0 ) else (grupo==1).sum()/len(grupo)
+		generos = np.array([f, nb, m])
+		dif_g = abs( self.generos - generos ) ** self.exp
+
+		# Componente colaborativa
+		e = 0
+		for i in range( self.ejes - self.ejes_alpha+self.ejes_beta, self.ejes, 1 ):
+			if len(grupo.shape) != 2: promedio = grupo[i]
+			else: promedio = np.mean( grupo[:,i] )
+			dif_c[e] = abs( promedio - self.ObjGenerales[i] )
+			e += 1
+
+		#if self.mm:
+		#	P = (P - self.min_p) / (self.max_p - self.min_p)
+		#	G = (G - self.min_g) / (self.max_g - self.min_g)
+		#	C = (C - self.min_c) / (self.max_c - self.min_c)
+
+		return dif_p, dif_g, dif_c
+
+
+
+	def check_new(self, p, g, c):
+		# Verifica que la resta en cada eje esté dentro de la tolerancia 
+		# si está dentro => se agrega al nuevo grupo (return True)
+		tol_p = np.ones( (self.ejes_alpha) ) * self.tol
+		tol_g = np.ones( (len(self.generos)) ) * self.tol
+		tol_c = np.ones( (self.ejes_gamma) ) * self.tol
+
+		# Check componente política, en caso de que no esté dentro de la tolerancia
+		if (p <= tol_p).any() and (p >= tol_p).any(): return False
+
+		# Check componente género
+		if (g <= tol_g).any() and (g >= tol_g).any(): return False
+
+		# Check componente colaborativa
+		if (c <= tol_c).any() and (c >= tol_c).any(): return False
+
+		return True
+
+
+
 	# --------- Usar algoritmo greedy --------- #
 	def Greedy(self):
 
 		for i in range(len(self.data)):
-			mejor_obj = np.ones(self.ejes)		# Guarda los promedios en todos los grupos, en caso que no cumpla la tolerancia
+			#  Se guarda los promedios en todos los grupos, en caso que no cumpla la tolerancia
+			mejor_p , mejor_g , mejor_c = -1, -1, -1
+
 			indice_grupal = 0					# Guarda el índice al mejor grupo para agregar el dato i
 			i_listo = False 					# Indica si el dato i se ingresó a un grupo o no
 
 			for j in list(compress( list(range(self.L)), ~self.listos )):
 
 				if len(self.grupos[j]) == 0:
-					self.UpdateGroup(j, i, self.data[i])
+					self.UpdateGroup(j, i, new_obj=self.data[i])
 					i_listo = True
 					break
 
 				aux = self.grupos[j].copy()
 				aux.append( self.data[i].tolist() )
 
-				nuevo_obj = self.CalcularObjetivo( np.array(aux, dtype=object) )
+				#nuevo_obj = self.CalcularObjetivo( np.array(aux, dtype=object) )
+				nuevo_obj = 0
+				p, g, c = self.diff( np.array(aux, dtype=float) )
 
 				lower = self.ObjGenerales - self.tol
 				upper = self.ObjGenerales + self.tol
 
-				if( (nuevo_obj[:self.ejes_alpha]>=lower[:self.ejes_alpha]).all() and (nuevo_obj[self.ejes_alpha]>=lower[self.ejes_alpha]).all() and
-				 (nuevo_obj[self.ejes_alpha+1:]>=lower[self.ejes_alpha+1:]).all() 
-				 and 
-				 (nuevo_obj[:self.ejes_alpha]<=upper[:self.ejes_alpha]).all() and (nuevo_obj[self.ejes_alpha]<=upper[self.ejes_alpha]).all() and
-				 (nuevo_obj[self.ejes_alpha+1:]<=upper[self.ejes_alpha+1:]).all() ):
+				if self.check_new(p, g, c):
 					self.UpdateGroup(j, i, nuevo_obj)
 					i_listo = True
 					break
 
 
 				#if (nuevo_obj >= (self.ObjGenerales - self.tol)).all() and (nuevo_obj <= (self.ObjGenerales + self.tol)).all():
-
-				dif = abs( abs(self.ObjGenerales) - abs(nuevo_obj) )
-				if (dif[:self.ejes_alpha] < mejor_obj[:self.ejes_alpha]).all() and (dif[self.ejes_alpha] < mejor_obj[self.ejes_alpha]).all() and (dif[self.ejes_alpha+1:] < mejor_obj[self.ejes_alpha+1:]).all() :
-					mejor_obj = nuevo_obj
+				if type(mejor_p) == int : 
+					mejor_p , mejor_g , mejor_c = p, g, c
+					indice_grupal = j
+				elif (p < mejor_p).all() and (g< mejor_g).all() and (c < mejor_c).all() :
+					mejor_p , mejor_g , mejor_c = p, g, c
 					indice_grupal = j
 					
 
 			if not i_listo:
-				self.UpdateGroup( indice_grupal, i, mejor_obj )
+				self.UpdateGroup( indice_grupal, i, p=p, g=g, c=c )
 
 		return self.grupos, self.X
 
