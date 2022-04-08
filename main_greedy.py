@@ -58,9 +58,9 @@ def graficar_greedy(args):
 
 
 
-	if args.tipo_greedy == "normal": 	  g = PromedioGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05)
-	elif args.tipo_greedy == "random": 	  g = IteratedRandomGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, it=20)
-	elif args.tipo_greedy == "iterativo": g = IteratedDestructiveGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, it=20)
+	if args.tipo_greedy == "normal": 	  g = PromedioGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, exponente=args.exp)
+	elif args.tipo_greedy == "random": 	  g = IteratedRandomGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, it=20, exponente=args.exp)
+	elif args.tipo_greedy == "iterativo": g = IteratedDestructiveGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, it=20, exponente=args.exp, D=3)
 
 
 
@@ -116,12 +116,14 @@ def graficar_greedy(args):
 	df["Tiempo"] 		 = [end - start]
 	df["Solucion"] 		 = [sol]
 
+	
 	if "ResultadosGreedy.csv" not in os.listdir("./"):
 		df.to_csv( "ResultadosGreedy.csv" )
 	else:
 		new_df = pd.read_csv( "ResultadosGreedy.csv", index_col=0 )
 		new_df = new_df.append( df, ignore_index=True )
 		new_df.to_csv( "ResultadosGreedy.csv" )
+	
 
 
 	if args.grafico:

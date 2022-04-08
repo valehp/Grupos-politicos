@@ -453,6 +453,8 @@ class IteratedDestructiveGreedy (RandomGreedy):
 		# r: porcentaje de aleatoreidad
 		# n: número de mejores grupos que guarda para hacer el cambio aleatorio
 		# D: número de grupos a destruir
+		assert (D > L), "ERROR! \nNO se pueden destruir {} grupos si hay {} grupos en total ...".format(D, L)
+
 		RandomGreedy.__init__(self, data, M, L, num_ejes, objetivos, tol, r, n)
 		self.MejorSolucion = np.array([])				# Guarda el mejor X obtenido
 		self.MejoresGrupos = np.array([])				# Guarda la solucion en forma de datos (para los gráficos)
