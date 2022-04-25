@@ -19,7 +19,6 @@ class BaseGreedy:
 		self.generos = generos
 		self.exp = exponente
 		self.mm = minmax
-		print("exponente: ", self.exp)
 
 		self.grupos = [ [] for i in range(L) ] 					# Aquí se guardan los grupos
 		self.listos = np.array([ False for i in range(L) ]) 	# Lista de bools que indica si los grupos están cerrados (completos) o no
@@ -48,7 +47,6 @@ class BaseGreedy:
 
 
 	def FuncionObjetivo(self):
-		print("FUNCIÓN OBJETIVO")
 		# Componente política
 		P = 0
 		for j in range(self.L):
@@ -58,7 +56,6 @@ class BaseGreedy:
 				else: promedios = grupo[i]
 				dif = abs( self.ObjGenerales[i] - promedios ) ** self.exp
 				P += np.sum(dif)
-		print("Componente política: ", P)
 
 
 		# Componente de género
@@ -72,7 +69,6 @@ class BaseGreedy:
 			generos = np.array([f, nb, m])
 			dif = abs( self.ObjGenerales[self.ejes_alpha] - generos ) ** self.exp
 			G += np.sum(dif)
-		print("Componente género: ", G)
 
 
 		# Componente de grupos colaborativos
@@ -82,7 +78,6 @@ class BaseGreedy:
 			for i in range(self.ejes_alpha+self.ejes_beta, self.ejes_alpha+self.ejes_beta+self.ejes_gamma, 1):
 				std = np.std( grupo[:,i] ) ** self.exp
 				C += np.sum(std)
-		print("Componente colab: ", C )
 
 		if self.mm:
 			P = (P - self.min_p) / (self.max_p - self.min_p)
@@ -92,6 +87,35 @@ class BaseGreedy:
 		self.Objetivo = self.alpha * P + self.beta * G + self.gamma * C
 		return self.Objetivo, (P, G, C)
 
+
+	def FruncionObjetivoGrupo(self, grupo, index_group):
+		P = 0
+		grupo = np.array(grupo)
+		for i in range(self.ejes_alpha):
+			promedios = np.mean(grupo[:,i])
+			dif = abs( self.ObjGenerales[i] - promedios ) ** self.exp
+			P += np.sum(dif)
+
+		G = 0
+		grupo_g = grupo[:, self.ejes_alpha]
+		f  = 0 if ((grupo_g==0).sum() == 0 ) else (grupo_g==0).sum()/len(grupo_g)
+		nb = 0 if ((grupo_g==0.5).sum() == 0 ) else (grupo_g==0.5).sum()/len(grupo_g)
+		m  = 0 if ((grupo_g==1).sum() == 0 ) else (grupo_g==1).sum()/len(grupo_g)
+		generos = np.array([f, nb, m])
+		dif = abs( self.ObjGenerales[self.ejes_alpha] - generos ) ** self.exp
+		G += np.sum(dif)
+
+		C = 0
+		for i in range(self.ejes_alpha+self.ejes_beta, self.ejes_alpha+self.ejes_beta+self.ejes_gamma, 1):
+			std = np.std( grupo[:,i] ) ** self.exp
+			C += np.sum(std)
+
+		if self.mm:
+			P = (P - self.min_p) / (self.max_p - self.min_p)
+			G = (G - self.min_g) / (self.max_g - self.min_g)
+			C = (C - self.min_c) / (self.max_c - self.min_c)
+
+		self.obj_grupales[index_group] = self.alpha * P + self.beta * G + self.gamma * C
 
 
 	# ------- Funciones para grupos ------- #
@@ -112,6 +136,7 @@ class BaseGreedy:
 	def CheckGroup(self, index):
 		if len(self.grupos[index]) >= self.sizes[index]:
 			self.listos[index] = True
+			self.FruncionObjetivoGrupo(self.grupos[index], index)
 			return True
 		return False
 
@@ -239,39 +264,6 @@ class BaseGreedy:
 				self.UpdateGroup( indice_grupal, i, p=p, g=g, c=c )
 
 		return self.grupos, self.X
-
-
-	# ------ Imprimir datos ------ #
-	def print_proms(self, file=""):
-
-		if not file:
-			for i in range(self.L):
-				print ("GRUPO {}: {}".format(i, self.obj_grupales[i]))
-			print("\n")
-		if file:
-			with open (file, 'w') as f:
-				f.write("VALOR OBJETIVO POR EJE: {} \t VALOR OBJETIVO GENERAL: {} \n\n".format( self.ObjGenerales, self.FuncionObjetivo() ))
-				for i in range(self.L):
-					f.write( "GRUPO {}: {}\n".format(i+1, self.obj_grupales[i]) )
-
-
-	def Mejor_Peor(self, file=""): 							# Retorna el mejor y el peor grupo encontrado
-		self.print_proms(file)
-		mejor, peor = float('inf'), -float('inf')
-		im, ip = 0, 0
-		for i in range(self.L):
-			dif = abs(self.obj_grupales[i] - self.ObjGenerales)
-			if (dif <= mejor).all(): mejor, im = dif, i
-			if (dif >= peor).all(): peor, ip = dif, i
-
-		with open(file, "a") as f:
-			f.write( "\nMEJOR -> Grupo {} \n\t {} -> dif: {}  \n".format(im+1, self.obj_grupales[im], mejor) )
-			f.write( "\nPEOR  -> Grupo {} \n\t {} -> dif: {}  \n".format(ip+1, self.obj_grupales[ip], peor) )
-			if not self.Objetivo: self.FuncionObjetivo()
-			f.write( "\nVALOR OBJETIVO: {}\n\n".format(self.Objetivo) )
-
-		return (mejor, im+1), (peor, ip+1)
-
 
 
 
@@ -508,7 +500,7 @@ class IteratedRandomGreedy (RandomGreedy):
 # ------------------------------------------------------------------------------------------------ #
 
 class IteratedDestructiveGreedy (RandomGreedy):			
-	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, r=0.05, n=5, it=20, D=1, exponente=1):
+	def __init__(self, data, M, L, num_ejes, objetivos=np.array([]), tol=0.05, r=0.05, n=5, it=20, D=2, exponente=1):
 		# r: porcentaje de aleatoreidad
 		# n: número de mejores grupos que guarda para hacer el cambio aleatorio
 		# D: número de grupos a destruir
@@ -518,7 +510,7 @@ class IteratedDestructiveGreedy (RandomGreedy):
 		self.MejorSolucion = np.array([])				# Guarda el mejor X obtenido
 		self.MejoresGrupos = np.array([])				# Guarda la solucion en forma de datos (para los gráficos)
 		self.MejorMetrica  = float('inf') 
-		self.it 		   = it
+		self.it 		   = it							# Cantidad de repeticiones del algoritmo
 		self.D 			   = D
 
 
@@ -531,14 +523,32 @@ class IteratedDestructiveGreedy (RandomGreedy):
 
 	def DestruirGrupos(self):
 		contador = 0			# Retorna la cantidad de personas que se quedan sin grupo
+		index_del = []			# índices de los datos eliminados
+		aux =  list( zip( self.obj_grupales, list(range(self.L)) ) )
+		aux.sort(reverse=True)
+		for i in range(self.D):
+			j = aux[i][1]	# índice del grupo a eliminar
+			contador += len(self.grupos[j])
+			index_del += list(compress( list(range(len(self.data))), self.X[:,j] ) )
+			self.X[:,j] = np.zeros(len(self.data)).copy()
+			self.listos[j] = False
+			self.grupos[j] = []
+
+		"""
 		for i in range( self.L-1, self.L-1-self.D, -1 ):	
 
 			contador += len(self.grupos[i])
 			self.listos[i] 	= False
 			self.X[:,i] 	= np.zeros( len(self.data) ).copy()
 			self.grupos[i] 	= []
+		"""
+		data = []
+		for i in index_del:
+			data.append( self.data[i,:] )
+		
+		data = np.array(data)
 
-		return contador
+		return data
 
 
 	def ActualizarMetrica(self, actual, grupos, X, dims):
@@ -560,8 +570,8 @@ class IteratedDestructiveGreedy (RandomGreedy):
 			metrica, dims= self.FuncionObjetivo()
 			if self.ActualizarMetrica( metrica, grupos, X, dims ): aux_obj_grupales = self.obj_grupales
 
-			personas = self.DestruirGrupos()
-			grupos, X, obj, dims = RandomGreedy.Usar(self, self.data[ len(self.data)-personas: ])
+			data = self.DestruirGrupos()
+			grupos, X, obj, dims = RandomGreedy.Usar(self, data)
 			if self.ActualizarMetrica( obj, grupos, X, dims ): aux_obj_grupales = self.obj_grupales
 
 
