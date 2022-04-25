@@ -32,11 +32,11 @@ def graficar_greedy(args):
         eje = EJES[e]
         #promedios.append( np.std(data[eje]) )
         promedios.append(0)
-    promedios = np.array(promedios)
+    promedios = np.array(promedios, dtype=object)
 
     if args.tipo_greedy == "normal": 	  g = PromedioGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, exponente=args.exp)
     elif args.tipo_greedy == "random": 	  g = IteratedRandomGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, it=20, exponente=args.exp)
-    elif args.tipo_greedy == "iterativo": g = IteratedDestructiveGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, it=20, exponente=args.exp, D=args.delete, n=args.best_group, r=args.random)
+    elif args.tipo_greedy == "iterativo": g = IteratedDestructiveGreedy(data.to_numpy(), M, L, len(EJES), promedios,  0.05, it=20, exponente=args.exp, D=args.delete, n=args.best_groups, r=args.random)
 
 
 
@@ -62,7 +62,6 @@ def graficar_greedy(args):
         # Guardar resultados
         df = pd.DataFrame()
         df["Tipo greedy"] 		= [args.tipo_greedy]
-        df["Cambio promedio"] 	= [cambiop]
         df["Valor objetivo"] 	= [g.Objetivo]
         df["Tiempo"] 			= [end - start]
 
@@ -77,7 +76,6 @@ def graficar_greedy(args):
 
         df = pd.DataFrame()
         df["Tipo greedy"] 		= [args.tipo_greedy]
-        df["Cambio promedio"] 	= [cambiop]
         df["N"] = [N]
         df["M"] = [M]
         df["L"] = [L]
@@ -182,7 +180,7 @@ def graficar_greedy(args):
                 axs[i][j].set_title(TITLES[e], size=20)
                 e +=1 
         f.tight_layout()
-        plt.savefig( "{}Promedios exp{} {} {}".format(out, args.exp, args.tipo_greedy, cambiop) )
+        plt.savefig( "{}Promedios exp{} {}".format(out, args.exp, args.tipo_greedy) )
         
 
 
@@ -215,6 +213,5 @@ if __name__ == "__main__":
 	parser.add_argument('-d', '--delete', type=int, default=1)          # Número de grupos a eliminar 
 
 	args = parser.parse_args()
-	print("\n\n", "="*100, "\n",args)
 
 	graficar_greedy(args)
